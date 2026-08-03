@@ -1,0 +1,20 @@
+gonzalgo
+Copyright (c) 2026 Vince Gonzalez
+
+Licensed under the Apache License, Version 2.0. See LICENSE.
+
+This distribution includes one file derived from Lean 4:
+
+  src/gonzalgo/lean_files/OmegaFix.lean
+      derived from src/Lean/Elab/Tactic/Omega/Frontend.lean (Lean 4.32.1)
+      Copyright (c) 2023 Lean FRO, LLC. All rights reserved.
+      Licensed under Apache License 2.0.
+      Authors: Kim Morrison
+
+  The file has been modified. The modifications are listed in a notice at the
+  top of that file, as required by section 4(b) of the Apache License. It is
+  included to demonstrate that a proposed fix compiles and produces choice-free
+  proofs, and is not a replacement for the `omega` tactic.
+
+Lean 4 is a project of the Lean FRO. This package is not affiliated with or
+endorsed by the Lean FRO or the Mathlib community.

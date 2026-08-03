@@ -1,0 +1,222 @@
+"""Tests over small hand-built fixtures.
+
+The fixtures are tiny on purpose. Every property tested here is one that a
+real dump would also have to satisfy, and each corresponds to a mistake that
+actually occurred while the tool was being written: proof terms silently absent,
+statement and proof edges conflated, a witness that is a local hypothesis rather
+than a library instance.
+"""
+
+from __future__ import annotations
+
+import pytest
+
+from gonzalgo import lean, lean_files, metamath
+from gonzalgo.graph import PROOF, STATEMENT, Graph
+
+
+def write(tmp_path, name, rows):
+    p = tmp_path / name
+    p.write_text("".join("\t".join(r) + "\n" for r in rows), encoding="utf-8")
+    return p
+
+
+# ---- the allowOpaque hazard ---------------------------------------------
+
+def test_dump_without_proof_terms_is_rejected(tmp_path):
+    """A dump whose theorems carry no proofs must fail loudly, not quietly.
+
+    This is the `value? (allowOpaque := true)` mistake. It does not degrade the
+    numbers, it inverts them: every theorem looks constructive because its proof
+    is invisible.
+    """
+    p = write(tmp_path, "bad.tsv", [
+        ("A", "Classical.choice", "", ""),
+        ("T", "thm1", "Nat", ""),
+        ("T", "thm2", "Nat", ""),
+    ])
+    with pytest.raises(lean.DumpError, match="allowOpaque"):
+        lean.check_dump(p)
+
+
+def test_dump_with_proof_terms_passes(tmp_path):
+    p = write(tmp_path, "ok.tsv", [
+        ("A", "Classical.choice", "", ""),
+        ("T", "thm1", "Nat", "Classical.choice"),
+    ])
+    stats = lean.check_dump(p)
+    assert stats["theorems"] == 1
+    assert stats["theorems_with_proof"] == 1
+
+
+def test_a_dump_with_no_theorems_at_all_is_not_an_error(tmp_path):
+    p = write(tmp_path, "defs.tsv", [("D", "f", "Nat", "Nat.succ")])
+    assert lean.check_dump(p)["theorems"] == 0
+
+
+# ---- reachability and edge labelling ------------------------------------
+
+def test_dependents_is_transitive():
+    g = Graph()
+    g.add("ax", kind="A")
+    g.add("mid", kind="T", proof=["ax"])
+    g.add("top", kind="T", proof=["mid"])
+    g.add("unrelated", kind="T", proof=["Nat"])
+    dep = g.dependents("ax")
+    assert dep[g.ids["top"]] and dep[g.ids["mid"]]
+    assert not dep[g.ids["unrelated"]]
+
+
+def test_entry_points_are_direct_citers_only():
+    g = Graph()
+    g.add("ax", kind="A")
+    g.add("gateway", kind="T", proof=["ax"])
+    g.add("user", kind="T", proof=["gateway"])
+    assert g.entry_points("ax", among="T") == ["gateway"]
+
+
+def test_path_labels_statement_and_proof_edges_differently():
+    """The label is the whole point: a proof edge can be rerouted by changing a
+    tactic, a statement edge cannot be touched without changing the theorem."""
+    g = Graph()
+    g.add("ax", kind="A")
+    g.add("viaProof", kind="T", proof=["ax"])
+    g.add("viaStatement", kind="T", statement=["ax"])
+    assert g.path_to("viaProof", "ax")[-1][1] == PROOF
+    assert g.path_to("viaStatement", "ax")[-1][1] == STATEMENT
+
+
+def test_path_is_none_when_independent():
+    g = Graph()
+    g.add("ax", kind="A")
+    g.add("free", kind="T", proof=["Nat.succ"])
+    assert g.path_to("free", "ax") is None
+    assert g.path_to("nonexistent", "ax") is None
+
+
+# ---- statement versus proof ---------------------------------------------
+
+def test_eligibility_separates_statement_from_proof(tmp_path):
+    p = write(tmp_path, "d.tsv", [
+        ("A", "Classical.choice", "", ""),
+        ("D", "Real", "", "Classical.choice"),       # choice-dependent constant
+        ("T", "eligible", "Nat", "Classical.choice"),  # clean stmt, dirty proof
+        ("T", "ineligible", "Real", "Classical.choice"),
+        ("T", "clean", "Nat", "Nat.succ"),
+    ])
+    g = lean.load(p)
+    e = lean.eligibility(p, g)
+    assert e.theorems == 3
+    assert e.proof_only == 1        # only `eligible` can ever be cleaned
+    assert e.stmt_and_proof == 1
+    assert e.neither == 1
+    assert e.ceiling == pytest.approx(1 / 3)
+
+
+# ---- witness filtering ---------------------------------------------------
+
+@pytest.mark.parametrize("witness,expected", [
+    ("instDecidableEqNat a b", True),
+    ("Nat.decLe", True),
+    ("x", False),                 # a local hypothesis, nothing to substitute
+    ("inst✝ a b", False),         # same, with arguments applied
+    ("", False),
+    ("   ", False),
+])
+def test_real_witness(witness, expected):
+    assert lean.real_witness(witness) is expected
+
+
+def test_audit_counts_cleanable_below_declarations(tmp_path):
+    """Cleanable must be the smallest of the three quantities: a declaration
+    with a substitutable site can still reach the axiom another way."""
+    dump = write(tmp_path, "d.tsv", [
+        ("A", "Classical.choice", "", ""),
+        ("D", "Other", "", "Classical.choice"),
+        ("T", "onlyRoute", "Nat", "Classical.propDecidable"),
+        ("T", "alsoOtherRoute", "Nat", "Classical.propDecidable Other"),
+    ])
+    sites = tmp_path / "sites.tsv"
+    sites.write_text(
+        "REMOVABLE\tM\tonlyRoute\tsite\tinstDecidableEqNat a b\n"
+        "REMOVABLE\tM\talsoOtherRoute\tsite\tinstDecidableEqNat a b\n",
+        encoding="utf-8")
+    g = lean.load(dump)
+    a = lean.audit(sites, dump, g)
+    assert a.declarations == 2
+    assert a.cleanable == 1 and a.blocked == 1
+    assert a.cleanable_names == ["onlyRoute"]
+
+
+# ---- Metamath ------------------------------------------------------------
+
+MM = """
+$( a toy database $)
+$c |- wff ( ) -> ph ps $.
+$v ph ps $.
+wph $f wff ph $.
+wps $f wff ps $.
+wi $a wff ( ph -> ps ) $.
+ax-1 $a |- ( ph -> ( ps -> ph ) ) $.
+ax-mp $a |- ps $.
+th1 $p |- ( ph -> ( ps -> ph ) ) $= ( ax-1 ) ABC $.
+th2 $p |- ( ph -> ( ps -> ph ) ) $= ( th1 ) ABC $.
+"""
+
+
+def test_logical_axioms_found_by_typecode_not_by_name(tmp_path):
+    """`wi` is named like an axiom and is a grammar production; it must not be
+    counted. The `ax-` convention differs between databases, so name rules
+    miscount two of the three this package targets."""
+    p = tmp_path / "toy.mm"
+    p.write_text(MM, encoding="utf-8")
+    db = metamath.parse(p)
+    assert db.logical_axioms == {"ax-1", "ax-mp"}
+    assert "wi" not in db.logical_axioms
+
+
+def test_metamath_closure_is_transitive(tmp_path):
+    p = tmp_path / "toy.mm"
+    p.write_text(MM, encoding="utf-8")
+    db = metamath.parse(p)
+    clos = metamath.closures(db)
+    assert "ax-1" in clos["th1"]
+    assert "ax-1" in clos["th2"]          # inherited through th1
+
+
+def test_amplification_counts_entries_below_dependents(tmp_path):
+    p = tmp_path / "toy.mm"
+    p.write_text(MM, encoding="utf-8")
+    a = metamath.amplification(p)
+    by = {s.name: s for s in a.stats}
+    assert by["ax-1"].dependents == 2     # th1 and th2
+    assert by["ax-1"].entry_points == 1   # only th1 cites it directly
+    assert by["ax-1"].amplification == 2.0
+
+
+# ---- shipped Lean sources ------------------------------------------------
+
+def test_lean_files_are_shipped_and_nonempty():
+    paths = lean_files.paths()
+    assert {p.name for p in paths} >= {"Split.lean", "Substitute.lean", "Rewrite.lean"}
+    for p in paths:
+        assert p.stat().st_size > 0
+
+
+def test_omegafix_retains_upstream_copyright_and_modification_notice():
+    """Apache 2.0 section 4(b): a modified file must say so, prominently."""
+    src = lean_files.read("OmegaFix.lean")
+    assert "Copyright (c) 2023 Lean FRO, LLC" in src
+    assert "MODIFIED FILE" in src
+
+
+def test_entry_points_default_to_proof_citations():
+    """A theorem citing an axiom in its STATEMENT is about the axiom, not
+    spending it. Counting the union inflated Mathlib's entry points from 144 to
+    158 and deflated amplification by the same proportion."""
+    g = Graph()
+    g.add("ax", kind="A")
+    g.add("spends", kind="T", proof=["ax"])
+    g.add("mentions", kind="T", statement=["ax"])
+    assert g.entry_points("ax", among="T") == ["spends"]
+    assert g.entry_points("ax", among="T", via=STATEMENT) == ["mentions"]
