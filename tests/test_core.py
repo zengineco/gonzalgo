@@ -258,3 +258,32 @@ def test_direct_dependents_of_unknown_name_is_empty_not_an_error():
     g = Graph()
     g.add("x", kind="D")
     assert g.direct_dependents("nope") == ([], [])
+
+
+def test_trust_reports_unfinished_proofs_and_their_reach(tmp_path, capsys):
+    """The point of tracking sorryAx on a graph: Lean warns about the `sorry`
+    you just typed, not about the theorem far downstream that inherits it."""
+    from gonzalgo.cli import main
+    p = tmp_path / "d.tsv"
+    p.write_text(
+        "A\tsorryAx\t\t\n"
+        "A\tClassical.choice\t\t\n"
+        "T\tunfinished\tNat\tsorryAx\n"
+        "T\tinnocent\tNat\tunfinished\n"      # inherits it without saying so
+        "T\tclean\tNat\tNat.succ\n",
+        encoding="utf-8")
+    assert main(["trust", str(p)]) == 0
+    out = capsys.readouterr().out
+    assert "UNFINISHED" in out
+    # both the direct user and the downstream inheritor must be counted
+    assert "2" in [w for line in out.splitlines() if "sorryAx" in line
+                   for w in line.split()]
+
+
+def test_trust_says_so_when_nothing_is_wrong(tmp_path, capsys):
+    from gonzalgo.cli import main
+    p = tmp_path / "d.tsv"
+    p.write_text("A\tpropext\t\t\nT\tt\tNat\tpropext\n", encoding="utf-8")
+    main(["trust", str(p)])
+    out = capsys.readouterr().out
+    assert "Nothing unfinished" in out

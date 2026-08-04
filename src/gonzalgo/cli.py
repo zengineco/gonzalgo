@@ -133,6 +133,44 @@ def cmd_why(args) -> int:
     return 0
 
 
+def cmd_trust(args) -> int:
+    """What is this project actually trusting, and how far does it spread?
+
+    `#print axioms` answers this one theorem at a time. The question a project
+    has is the whole-library one: is anything here unfinished, and is anything
+    resting on the compiler rather than the kernel — and if so, what else has
+    quietly inherited it.
+    """
+    path = Path(args.dump)
+    g = _load(path)
+    thms = [i for i, k in g.kind.items() if k == "T"]
+    print(f"  {'axiom':<22}{'declared':>9}{'direct':>8}{'theorems':>10}   note")
+    flagged = []
+    for name, note in lean.ESCAPE_HATCHES.items():
+        if name not in g.ids:
+            print(f"  {name:<22}{'absent':>9}{'-':>8}{'-':>10}   not in this environment")
+            continue
+        direct = len(g.entry_points(name, via=graph.PROOF)) + \
+                 len(g.entry_points(name, via=graph.STATEMENT))
+        reach = g.dependents(name)
+        n = sum(1 for i in thms if reach[i])
+        print(f"  {name:<22}{'yes':>9}{direct:>8,}{n:>10,}   {note}")
+        if direct and name not in lean.UNREMARKABLE:
+            flagged.append((name, direct, n))
+    print()
+    worry = [f for f in flagged if f[0] in ("sorryAx", "Lean.ofReduceBool",
+                                            "Lean.ofReduceNat", "Lean.trustCompiler")]
+    if not worry:
+        print("  Nothing unfinished, and nothing resting on the compiler.")
+    else:
+        for name, direct, n in worry:
+            print(f"  {name}: {direct:,} declarations use it directly, "
+                  f"{n:,} theorems inherit it.")
+        print("\n  `gonzalgo why DUMP <theorem> -a <axiom>` shows the route for any one"
+              " of them.")
+    return 0
+
+
 def cmd_impact(args) -> int:
     """`why` run backwards: if I change this, what breaks and how badly?"""
     path = Path(args.dump)
@@ -247,6 +285,10 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("decl", nargs="+")
     s.add_argument("-a", "--axiom", default=lean.AXIOM)
     s.set_defaults(func=cmd_why)
+
+    s = sub.add_parser("trust", help="unfinished proofs and compiler-trusting results")
+    s.add_argument("dump")
+    s.set_defaults(func=cmd_trust)
 
     s = sub.add_parser("impact", help="if I change this, what breaks?")
     s.add_argument("dump")

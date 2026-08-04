@@ -35,6 +35,37 @@ FALLBACKS = frozenset({
     "Classical.decPred", "Classical.decRel",
 })
 
+#: Escape hatches worth auditing, and why each one matters. These are not
+#: interchangeable and a report that lumps them together is useless.
+#:
+#: `sorryAx` means a proof is unfinished. Lean warns about the `sorry` you just
+#: typed; it does not tell you that a theorem three hundred files downstream
+#: silently inherits one. That is a graph question, and this is a graph.
+#:
+#: `Lean.ofReduceBool` and `Lean.ofReduceNat` are what `native_decide` emits:
+#: the result was obtained by compiling and running code, and believing the
+#: answer. That trusts the compiler and the runtime, not the kernel, and real
+#: soundness bugs have been found there. Mathlib restricts it by policy.
+#:
+#: `Lean.trustCompiler` is the same species, asserted directly.
+#:
+#: The three classical axioms are listed for completeness. Every Mathlib theorem
+#: rests on `propext` and `Quot.sound`, so their presence is uninformative;
+#: `Classical.choice` is informative but its removal is a stated non-goal of
+#: Lean core, which the report says rather than implying a defect.
+ESCAPE_HATCHES: dict[str, str] = {
+    "sorryAx": "UNFINISHED PROOF - this result is not proved at all",
+    "Lean.ofReduceBool": "native_decide - trusts the compiler, not the kernel",
+    "Lean.ofReduceNat": "native_decide - trusts the compiler, not the kernel",
+    "Lean.trustCompiler": "trusts the compiler, not the kernel",
+    "Classical.choice": "classical - removal is a stated non-goal of Lean core",
+    "propext": "standard - every Mathlib theorem rests on this",
+    "Quot.sound": "standard - every Mathlib theorem rests on this",
+}
+
+#: Presence of these says nothing; excluded from the headline count.
+UNREMARKABLE = frozenset({"propext", "Quot.sound"})
+
 
 def _open(path: Path):
     if str(path).endswith(".gz"):
