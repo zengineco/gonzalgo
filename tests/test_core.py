@@ -220,3 +220,19 @@ def test_entry_points_default_to_proof_citations():
     g.add("mentions", kind="T", statement=["ax"])
     assert g.entry_points("ax", among="T") == ["spends"]
     assert g.entry_points("ax", among="T", via=STATEMENT) == ["mentions"]
+
+
+def test_missing_target_is_an_error_not_a_negative_answer(capsys):
+    """"This does not depend on that" and "you typed a name that does not
+    exist" are opposite answers. Reporting the second as the first is the
+    silent-wrong-answer this whole package exists to prevent."""
+    import tempfile, pathlib
+    from gonzalgo.cli import main
+    d = pathlib.Path(tempfile.mkdtemp())
+    p = d / "d.tsv"
+    p.write_text("A\tClassical.choice\t\t\nT\tthm\tNat\tNat.succ\n", encoding="utf-8")
+    rc = main(["why", str(p), "thm", "-a", "No.Such.Constant"])
+    out = capsys.readouterr().out
+    assert rc == 2
+    assert "no declaration named" in out
+    assert "no path" not in out

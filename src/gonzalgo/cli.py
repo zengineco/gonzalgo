@@ -104,12 +104,27 @@ def cmd_eligible(args) -> int:
 def cmd_why(args) -> int:
     path = Path(args.dump)
     g = _load(path)
+    # A missing TARGET must not be reported as "no path". "This theorem does not
+    # depend on that" and "you typed a name that does not exist" are opposite
+    # answers, and conflating them is exactly the silent-wrong-answer this tool
+    # exists to prevent.
+    if args.axiom not in g.ids:
+        print(f"\n  ERROR: no declaration named {args.axiom!r} in this dump.")
+        near = [n for n in g.ids if n.endswith("." + args.axiom.split(".")[-1])][:6]
+        if near:
+            print("  Did you mean:")
+            for n in near:
+                print(f"    {n}")
+        print()
+        return 2
     for decl in args.decl:
         print(f"\n  {decl}")
+        if decl not in g.ids:
+            print(f"    ERROR: no declaration named {decl!r} in this dump")
+            continue
         p = g.path_to(decl, args.axiom)
         if p is None:
-            missing = " (declaration not found)" if decl not in g.ids else ""
-            print(f"    no path to {args.axiom}{missing}")
+            print(f"    does not depend on {args.axiom}")
             continue
         for i, (node, label) in enumerate(p):
             tag = "" if i == 0 else f"--{label}--> "
