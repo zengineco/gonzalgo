@@ -133,6 +133,40 @@ def cmd_why(args) -> int:
     return 0
 
 
+def cmd_impact(args) -> int:
+    """`why` run backwards: if I change this, what breaks and how badly?"""
+    path = Path(args.dump)
+    g = _load(path)
+    for target in args.decl:
+        print(f"\n  {target}")
+        if target not in g.ids:
+            print(f"    ERROR: no declaration named {target!r} in this dump")
+            continue
+        stmt, proof = g.direct_dependents(target)
+        reach = g.dependents(target)
+        total = int(reach.sum()) - 1          # the target reaches itself
+        thms = sum(1 for i, k in g.kind.items() if k == "T" and reach[i])
+        print(f"    reached transitively   {total:>8,}   ({thms:,} of them theorems)")
+        print(f"    ── direct ──")
+        print(f"    in a STATEMENT         {len(stmt):>8,}   API surface: changing the")
+        print(f"                                      type changes their meaning")
+        print(f"    in a PROOF only        {len(proof):>8,}   insulated: a type-preserving")
+        print(f"                                      change costs a recompile")
+        if total:
+            blast = total / max(len(stmt) + len(proof), 1)
+            print(f"    amplification          {blast:>8,.0f}x   inherited per direct user")
+        n = args.limit
+        for label, names in (("STATEMENT", stmt), ("PROOF", proof)):
+            if names and n:
+                print(f"\n    direct via {label}:")
+                for x in sorted(names)[:n]:
+                    print(f"      {x[:88]}")
+                if len(names) > n:
+                    print(f"      ... and {len(names) - n:,} more")
+    print()
+    return 0
+
+
 def cmd_audit(args) -> int:
     dump = Path(args.dump)
     g = _load(dump)
@@ -203,6 +237,13 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("decl", nargs="+")
     s.add_argument("-a", "--axiom", default=lean.AXIOM)
     s.set_defaults(func=cmd_why)
+
+    s = sub.add_parser("impact", help="if I change this, what breaks?")
+    s.add_argument("dump")
+    s.add_argument("decl", nargs="+")
+    s.add_argument("-n", "--limit", type=int, default=10, metavar="N",
+                   help="show up to N direct dependents of each kind (0 for none)")
+    s.set_defaults(func=cmd_impact)
 
     s = sub.add_parser("audit", help="sites -> declarations -> cleanable")
     s.add_argument("sites")

@@ -236,3 +236,25 @@ def test_missing_target_is_an_error_not_a_negative_answer(capsys):
     assert rc == 2
     assert "no declaration named" in out
     assert "no path" not in out
+
+
+def test_direct_dependents_splits_api_surface_from_recompile():
+    """Statement dependents inherit a meaning change; proof dependents only
+    need rebuilding. Collapsing the two is what makes ordinary "who uses this"
+    useless for deciding whether a change is safe."""
+    g = Graph()
+    g.add("target", kind="D")
+    g.add("usesInType", kind="T", statement=["target"])
+    g.add("usesInProof", kind="T", proof=["target"])
+    g.add("indirect", kind="T", proof=["usesInProof"])
+    stmt, proof = g.direct_dependents("target")
+    assert stmt == ["usesInType"]
+    assert proof == ["usesInProof"]
+    assert "indirect" not in stmt + proof          # direct only
+    assert g.dependents("target")[g.ids["indirect"]]  # but reached transitively
+
+
+def test_direct_dependents_of_unknown_name_is_empty_not_an_error():
+    g = Graph()
+    g.add("x", kind="D")
+    assert g.direct_dependents("nope") == ([], [])

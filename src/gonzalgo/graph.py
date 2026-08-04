@@ -167,6 +167,27 @@ class Graph:
         return [self.names[u] for u, deps in store.items()
                 if v in deps and (among is None or self.kind.get(u) == among)]
 
+    def direct_dependents(self, target: str) -> tuple[list[str], list[str]]:
+        """Everything citing `target` directly, split into (statement, proof).
+
+        The split is the point, and it is what a plain "who uses this" cannot
+        tell you. A declaration citing the target in its STATEMENT has the
+        target in its API: change the target's type and this one's meaning
+        changes with it, so its downstream users may need rewriting too. A
+        declaration citing it only in its PROOF is insulated: the statement is
+        unaffected, and a change that preserves the type costs a recompile and
+        nothing else.
+
+        One scan over both edge stores rather than two, since at Mathlib scale
+        the stores hold thirty million entries between them.
+        """
+        if target not in self.ids:
+            return [], []
+        v = self.ids[target]
+        stmt = [self.names[u] for u, deps in self._stmt_deps.items() if v in deps]
+        proof = [self.names[u] for u, deps in self._proof_deps.items() if v in deps]
+        return stmt, proof
+
     def path_to(self, start: str, target: str) -> list[tuple[str, str]] | None:
         """Shortest `start` -> `target` path, each hop labelled statement or proof.
 

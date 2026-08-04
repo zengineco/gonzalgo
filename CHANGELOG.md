@@ -1,5 +1,37 @@
 # Changelog
 
+## 0.2.0 — 2026-08-04
+
+**New: `gonzalgo impact` — `why` run backwards.** Given a declaration, what
+breaks if you change it, and how badly:
+
+```
+Nat.decLe
+  reached transitively    398,968   (295,411 of them theorems)
+  in a STATEMENT              626   API surface: their meaning changes with it
+  in a PROOF only           4,225   insulated: a type-preserving change rebuilds
+```
+
+The split is the whole value. A plain "who uses this" cannot distinguish a
+declaration whose *type* mentions the target — whose meaning therefore moves
+when the target moves, and whose own users may need rewriting — from one that
+merely calls it inside a proof and needs nothing but a recompile.
+
+**Fixed: `why` reported a missing target as "no path".** That is
+indistinguishable from a genuine negative, and the two are opposite answers.
+Now errors with exit 2 and suggests near matches. A missing *start* declaration
+is reported separately, and a real negative reads "does not depend on X".
+
+Found by pointing `why` at an ordinary definition rather than an axiom, which
+also demonstrated the more general capability the package had all along:
+
+```
+Int.mem_box  --stmt-->  Finset.box  --proof-->  disjointed
+```
+
+First hop lives in the statement, second in the body. Nothing about this is
+specific to axioms; `-a` accepts any constant.
+
 ## 0.1.1 — 2026-08-04
 
 Documentation and packaging only. No change to any behaviour, API or result.

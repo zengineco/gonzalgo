@@ -133,6 +133,26 @@ edge can often be rerouted by changing a tactic, a statement edge cannot be
 touched without changing what the theorem says. A path made only of proof edges
 is what makes a declaration worth patching at all.
 
+**If I change this, what breaks?**
+
+```console
+$ gonzalgo impact mathlib_split.tsv Nat.decLe
+
+  Nat.decLe
+    reached transitively    398,968   (295,411 of them theorems)
+    ── direct ──
+    in a STATEMENT              626   API surface: changing the
+                                      type changes their meaning
+    in a PROOF only           4,225   insulated: a type-preserving
+                                      change costs a recompile
+```
+
+`why` run backwards. The statement/proof split is the value: a declaration whose
+*type* mentions the target has the target in its API, so its meaning moves when
+the target moves and its own users may need rewriting. One that merely calls it
+inside a proof needs nothing but a rebuild. A plain "who uses this" cannot tell
+them apart, which is why it can't tell you whether a change is safe.
+
 **How far does an axiom reach, and where is it spent?**
 
 ```console
