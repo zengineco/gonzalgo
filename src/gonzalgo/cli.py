@@ -195,8 +195,18 @@ def cmd_mm(args) -> int:
         print(f"\n  {a.name}")
         print(f"    theorems                  {a.theorems:>9,}")
         print(f"    logical axioms (|-)       {a.axioms_declared:>9,}   used {a.axioms_used}")
+        if not a.theorems or not a.stats:
+            # peano.mm is an axiomatisation with no derived theorems. Reporting
+            # 0.0x would read as "no amplification"; the truth is that the
+            # quantity is undefined, which is a different claim.
+            print("    amplification             undefined - no derived theorems")
+            continue
+        entries = sum(s.entry_points for s in a.stats)
         print(f"    median entries per axiom  {a.median_entries:>9.1f}")
-        print(f"    overall amplification     {a.overall:>9.1f}x")
+        print(f"    entries per theorem       {entries / a.theorems:>9.4f}   "
+              f"(size-independent)")
+        print(f"    overall amplification     {a.overall:>9.1f}x  "
+              f"(scales with library size)")
         top = a.top(5)
         if top:
             print("    heaviest: " + "; ".join(
