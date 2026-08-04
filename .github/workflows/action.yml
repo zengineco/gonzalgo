@@ -1,0 +1,56 @@
+name: action
+
+# Exercises the composite action in BOTH directions against real Lean projects.
+# A gate that only ever passes is not a gate, so the dirty case must fail and the
+# job asserts that it did.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  clean-project-passes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install this checkout of gonzalgo
+        run: python -m pip install --quiet .
+      - id: audit
+        uses: ./
+        with:
+          project: examples/clean
+          module: Demo
+          cache: 'false'
+      - name: The clean project must report clean
+        run: |
+          test "${{ steps.audit.outputs.clean }}" = "true" \
+            || { echo "::error::clean project was not reported clean"; exit 1; }
+
+  unfinished-proof-fails:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install this checkout of gonzalgo
+        run: python -m pip install --quiet .
+      - id: audit
+        continue-on-error: true
+        uses: ./
+        with:
+          project: examples/dirty
+          module: Demo
+          cache: 'false'
+      - name: The gate must have fired
+        run: |
+          if [ "${{ steps.audit.outcome }}" = "success" ]; then
+            echo "::error::a project resting on an unfinished proof was passed"
+            exit 1
+          fi
+          echo "gate fired as required"

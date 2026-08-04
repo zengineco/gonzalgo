@@ -1,0 +1,107 @@
+name: 'Gonzalgo trust audit'
+description: >-
+  Fail the build if any theorem in a Lean 4 project rests on an unfinished proof
+  or on trusting the compiler rather than the kernel.
+author: 'Vince Gonzalez'
+branding:
+  icon: 'shield'
+  color: 'purple'
+
+inputs:
+  project:
+    description: 'Path to the Lake project root.'
+    required: false
+    default: '.'
+  module:
+    description: >-
+      Root module to audit, e.g. MyProject. Everything it transitively imports is
+      included. Defaults to the lakefile default target.
+    required: false
+    default: ''
+  fail-on-trust:
+    description: >-
+      Fail the job when a theorem rests on an unfinished proof or on the
+      compiler. Set false to report without gating.
+    required: false
+    default: 'true'
+  cache:
+    description: 'Run `lake exe cache get` first. Essential for Mathlib projects.'
+    required: false
+    default: 'true'
+
+outputs:
+  clean:
+    description: '"true" when no theorem reaches an unfinished proof or the compiler.'
+    value: ${{ steps.audit.outputs.clean }}
+
+runs:
+  using: composite
+  steps:
+    - name: Install elan
+      shell: bash
+      run: |
+        set -euo pipefail
+        curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+          -o elan-init.sh
+        sh elan-init.sh -y --default-toolchain none
+        echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+    - name: Install gonzalgo
+      shell: bash
+      run: python3 -m pip install --quiet --upgrade gonzalgo
+
+    - name: Fetch prebuilt artifacts
+      if: inputs.cache == 'true'
+      shell: bash
+      working-directory: ${{ inputs.project }}
+      # Mathlib takes hours to build from source and minutes to download. A
+      # project without the cache exe simply skips this.
+      run: lake exe cache get || echo "no cache target; building from source"
+
+    - name: Build
+      shell: bash
+      working-directory: ${{ inputs.project }}
+      run: lake build
+
+    - name: Extract the declaration graph
+      shell: bash
+      working-directory: ${{ inputs.project }}
+      run: |
+        set -euo pipefail
+        MODULE='${{ inputs.module }}'
+        if [ -z "$MODULE" ]; then
+          # default target from lakefile: `lean_lib Foo` or `@[default_target]`
+          MODULE=$(grep -oP '(?<=^lean_lib )\w+' lakefile.lean 2>/dev/null | head -1 \
+                || grep -oP '(?<=name = ")\w+' lakefile.toml 2>/dev/null | head -1 \
+                || true)
+        fi
+        if [ -z "$MODULE" ]; then
+          echo "::error::Could not determine the root module. Pass `module:` explicitly."
+          exit 1
+        fi
+        echo "auditing module: $MODULE"
+        gonzalgo lean-files .gonzalgo
+        # Split.lean imports Mathlib by default; audit THIS project instead.
+        sed -i "s/^import Mathlib$/import $MODULE/" .gonzalgo/Split.lean
+        lake env lean .gonzalgo/Split.lean
+
+    - name: Audit
+      id: audit
+      shell: bash
+      working-directory: ${{ inputs.project }}
+      run: |
+        set -euo pipefail
+        FLAG=''
+        if [ '${{ inputs.fail-on-trust }}' = 'true' ]; then FLAG='--fail-on-trust'; fi
+        if gonzalgo trust mathlib_split.tsv $FLAG | tee audit.txt; then
+          echo "clean=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "clean=false" >> "$GITHUB_OUTPUT"
+          exit 1
+        fi
+        {
+          echo '## Gonzalgo trust audit'
+          echo '```'
+          cat audit.txt
+          echo '```'
+        } >> "$GITHUB_STEP_SUMMARY"
