@@ -286,4 +286,33 @@ def test_trust_says_so_when_nothing_is_wrong(tmp_path, capsys):
     p.write_text("A\tpropext\t\t\nT\tt\tNat\tpropext\n", encoding="utf-8")
     main(["trust", str(p)])
     out = capsys.readouterr().out
-    assert "Nothing unfinished" in out
+    assert "CLEAN" in out
+
+
+def test_fail_on_trust_gates_a_build(tmp_path, capsys):
+    """The certifier's point: a clean library should be able to PROVE it is
+    clean on every commit rather than assuming it."""
+    from gonzalgo.cli import main
+    dirty = tmp_path / "dirty.tsv"
+    dirty.write_text(
+        "A\tsorryAx\t\t\n"
+        "T\tbad\tNat\tsorryAx\n", encoding="utf-8")
+    assert main(["trust", str(dirty), "--fail-on-trust"]) == 1
+
+    clean = tmp_path / "clean.tsv"
+    clean.write_text(
+        "A\tpropext\t\t\nT\tgood\tNat\tpropext\n", encoding="utf-8")
+    assert main(["trust", str(clean), "--fail-on-trust"]) == 0
+
+
+def test_declared_but_unreached_trust_axiom_is_not_a_finding(tmp_path, capsys):
+    """Lean's environment always declares the native_decide primitives. What
+    matters is whether a THEOREM reaches one, not whether it exists."""
+    from gonzalgo.cli import main
+    p = tmp_path / "d.tsv"
+    p.write_text(
+        "A\tLean.trustCompiler\t\t\n"
+        "O\tLean.reduceBool\t\tLean.trustCompiler\n"   # primitive, no theorem uses it
+        "T\tthm\tNat\tNat.succ\n", encoding="utf-8")
+    assert main(["trust", str(p), "--fail-on-trust"]) == 0
+    assert "CLEAN" in capsys.readouterr().out

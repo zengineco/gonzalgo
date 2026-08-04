@@ -158,16 +158,30 @@ def cmd_trust(args) -> int:
         if direct and name not in lean.UNREMARKABLE:
             flagged.append((name, direct, n))
     print()
-    worry = [f for f in flagged if f[0] in ("sorryAx", "Lean.ofReduceBool",
-                                            "Lean.ofReduceNat", "Lean.trustCompiler")]
+    # A trust axiom that no THEOREM reaches is not a finding. Lean's environment
+    # necessarily contains the primitives `native_decide` is built from; what
+    # matters is whether any mathematical result rests on them.
+    worry = [f for f in flagged
+             if f[0] in ("sorryAx", "Lean.ofReduceBool", "Lean.ofReduceNat",
+                         "Lean.trustCompiler") and f[2] > 0]
     if not worry:
-        print("  Nothing unfinished, and nothing resting on the compiler.")
+        print("  CLEAN: no theorem here rests on an unfinished proof or on the")
+        print("  compiler. Trust axioms may be declared - Lean's environment always")
+        print("  declares them - but no result reaches one.")
     else:
         for name, direct, n in worry:
             print(f"  {name}: {direct:,} declarations use it directly, "
                   f"{n:,} theorems inherit it.")
         print("\n  `gonzalgo why DUMP <theorem> -a <axiom>` shows the route for any one"
               " of them.")
+
+    if args.fail_on_trust:
+        # exit non-zero so this can gate a build. A clean library can then PROVE
+        # it is clean on every commit, rather than assuming it.
+        if worry:
+            print("\n  FAILING: --fail-on-trust was requested and results are affected.")
+            return 1
+        print("\n  --fail-on-trust: passed.")
     return 0
 
 
@@ -288,6 +302,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     s = sub.add_parser("trust", help="unfinished proofs and compiler-trusting results")
     s.add_argument("dump")
+    s.add_argument("--fail-on-trust", action="store_true",
+                   help="exit 1 if any theorem rests on an unfinished proof or on "
+                        "the compiler, so this can gate a build")
     s.set_defaults(func=cmd_trust)
 
     s = sub.add_parser("impact", help="if I change this, what breaks?")
