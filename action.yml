@@ -1,7 +1,6 @@
 name: 'Gonzalgo trust audit'
-description: >-
-  Fail the build if any theorem in a Lean 4 project rests on an unfinished proof
-  or on trusting the compiler rather than the kernel.
+# GitHub Marketplace caps this at 125 characters. 107.
+description: 'Fails a Lean 4 build when a theorem rests on an unfinished proof or on the compiler rather than the kernel.'
 author: 'Vince Gonzalez'
 branding:
   icon: 'shield'
