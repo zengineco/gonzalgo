@@ -65,6 +65,41 @@ rest on the axiom of choice with no need. Filed upstream; the fix is one file.
 
 ---
 
+## Put it in CI, get a badge
+
+Three lines in any Lean 4 project. Every commit is checked for theorems resting
+on an unfinished proof or on trusting the compiler rather than the kernel.
+
+```yaml
+# .github/workflows/kernel-clean.yml
+name: kernel-clean
+on: [push, pull_request]
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: zengineco/gonzalgo@v1
+        with:
+          module: MyProject
+```
+
+Then the badge, which is just the workflow's own status — no extra service:
+
+```markdown
+![kernel-clean](https://github.com/YOU/REPO/actions/workflows/kernel-clean.yml/badge.svg)
+```
+
+**What the badge actually certifies.** Not that the proofs are correct — Lean
+already checks that. That no theorem in the project is standing on a `sorry`
+somewhere upstream, and that none of them were decided by compiling and running
+code instead of by the kernel.
+
+Lean warns about the `sorry` you just typed. It says nothing about the theorem
+three files later that quietly inherits it. In the worked example under
+`examples/dirty`, Lean reports **one** warning and the audit finds **two**
+contaminated theorems.
+
 ## How it fits together
 
 ```
