@@ -1,11 +1,27 @@
-# gonzalgo
+```
+╔════════════════════════════════════════════════════════════════════╗
+║                                                                    ║
+║    ██████╗  ██████╗ ███╗   ██╗███████╗ █████╗ ██╗      ██████╗     ║
+║   ██╔════╝ ██╔═══██╗████╗  ██║╚══███╔╝██╔══██╗██║     ██╔════╝     ║
+║   ██║  ███╗██║   ██║██╔██╗ ██║  ███╔╝ ███████║██║     ██║  ███╗    ║
+║   ██║   ██║██║   ██║██║╚██╗██║ ███╔╝  ██╔══██║██║     ██║   ██║    ║
+║   ╚██████╔╝╚██████╔╝██║ ╚████║███████╗██║  ██║███████╗╚██████╔╝    ║
+║    ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝╚══════╝ ╚═════╝     ║
+║                                                                    ║
+║        where does a formal library spend its axioms?               ║
+║                                                                    ║
+╚════════════════════════════════════════════════════════════════════╝
+```
 
-**Measure where a formal library spends its axioms.**
+[![PyPI](https://img.shields.io/pypi/v/gonzalgo)](https://pypi.org/project/gonzalgo/)
+[![Python](https://img.shields.io/pypi/pyversions/gonzalgo)](https://pypi.org/project/gonzalgo/)
+[![License](https://img.shields.io/pypi/l/gonzalgo)](LICENSE)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.21769847-blue)](https://doi.org/10.5281/zenodo.21769847)
 
-`#print axioms` tells you whether one theorem depends on an axiom. It cannot
-tell you where an axiom is *spent* rather than inherited, how far that spending
-reaches, how much of it could be avoided, or — for a given theorem — which step
-introduced it. This does.
+`#print axioms` tells you whether *one* theorem depends on an axiom. It cannot
+tell you where an axiom is **spent** rather than inherited, how far that spending
+reaches, how much of it could be avoided, or — for a given theorem — **which step
+introduced it**. This does.
 
 Works on **Lean 4 / Mathlib** and on **Metamath** databases (`set.mm`,
 `iset.mm`, `nf.mm`), by one program, so two foundations are compared under
@@ -16,6 +32,76 @@ $ pip install gonzalgo
 ```
 
 Pure Python. macOS, Windows, Linux. `numpy` is the only dependency.
+
+---
+
+## What it found
+
+Pointed at Lean 4.32.1 with Mathlib — 790,171 declarations, 30 million
+dependency edges — the funnel from "the whole library" down to "provably
+removable" runs like this:
+
+```
+   532,605   theorems in Mathlib
+  ─────────────────────────────────────────────────────────────────────
+   324,808   ██████████████████████████████░░░░░░░░░░  depend on Classical.choice   61.0%
+       144   ▏                                         actually SPEND it (entry points)
+  ─────────────────────────────────────────────────────────────────────
+    69,571   ██████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  could be stated without it   13.1%
+                                                       └─ a ceiling, not an estimate
+  ─────────────────────────────────────────────────────────────────────
+       805   substitutable sites — a choice-free instance existed, unused
+       280   declarations whose ONLY route to the axiom runs through one
+       276   ▏ attributable to a single tactic  ────────────────────┐
+       275   ▏ kernel-verified choice-free after substitution       │
+         4   ▏ kernel REJECTED — and they are exactly the 4 NOT ────┘
+             ▏ attributable to that tactic. The partition was not designed.
+```
+
+That single tactic is **`omega`**, which supplies the `Decidable` arguments of
+six helper lemmas as a hardcoded `Classical.propDecidable` and never attempts
+instance synthesis — so proofs as elementary as `a - b = 0 ↔ a ≤ b` over `Nat`
+rest on the axiom of choice with no need. Filed upstream; the fix is one file.
+
+---
+
+## How it fits together
+
+```
+        your Lean project
+               │
+               │  gonzalgo lean-files ./scripts
+               │  lake env lean scripts/Split.lean
+               ▼
+     ┌───────────────────────┐
+     │   dependency graph    │   one row per declaration:
+     │  statement │ proof    │   KIND · NAME · stmt-deps · proof-deps
+     └───────────┬───────────┘
+                 │
+                 │  gonzalgo check      ← refuses a dump with no proof terms
+                 ▼
+     ┌───────────────────────────────────────────────────┐
+     │                                                   │
+     ▼                  ▼                ▼               ▼
+  amplify           eligible            why            audit
+  ───────           ────────            ───            ─────
+  where is the      how much is         which step     which sites are
+  axiom spent,      even eligible       introduced     substitutable, and
+  and how far       for removal?        it?            which declarations
+  does it reach?    (the ceiling)                      go clean if you fix
+                                                       every one
+                                                            │
+                                                            ▼
+                                                   lake env lean Rewrite.lean
+                                                   ───────────────────────────
+                                                   swap the instance in and ask
+                                                   the KERNEL if the proof holds
+```
+
+Nothing above the kernel step is trusted on my say-so: `Substitute.lean` decides
+substitutability with `collectAxioms`, and `Rewrite.lean` submits the rewritten
+proof term to `addDecl`. A name-based screen was tried first and measured 41.5%
+precision, which is why none of this reads names.
 
 ---
 
