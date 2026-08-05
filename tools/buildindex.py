@@ -32,7 +32,7 @@ payload = {
     "producedBy": {
         "software": "gonzalgo",
         "url": "https://pypi.org/project/gonzalgo/",
-        "paper": "https://doi.org/10.5281/zenodo.21769847",
+        "paper": "https://doi.org/10.5281/zenodo.21769846",
     },
     "measured": {
         "Lean 4": "4.32.1 with Mathlib",
@@ -99,7 +99,7 @@ jsonld = json.dumps({
                  "provenance", "trusted base"],
     "creator": {"@type": "Person", "name": "Vincent Gonzalez",
                 "identifier": "https://orcid.org/0009-0005-3640-014X"},
-    "isBasedOn": "https://doi.org/10.5281/zenodo.21769847",
+    "isBasedOn": "https://doi.org/10.5281/zenodo.21769846",
     "distribution": [
         {"@type": "DataDownload", "encodingFormat": "application/json",
          "contentUrl": "https://f-keys.com/gonzalgo/kernel-index/kernel-index.json"},
@@ -232,7 +232,7 @@ someone ran it and it came back empty.
 <footer>
   <p>
     Cite: Gonzalez, V. (2026). <em>Where Formal Libraries Spend Their Axioms</em>.
-    Zenodo. <a href="https://doi.org/10.5281/zenodo.21769847">10.5281/zenodo.21769847</a>
+    Zenodo. <a href="https://doi.org/10.5281/zenodo.21769846">10.5281/zenodo.21769846</a>
   </p>
   <p style="margin-top:.8rem;">
     The Kernel Index is maintained at

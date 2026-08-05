@@ -16,7 +16,7 @@
 [![PyPI](https://img.shields.io/pypi/v/gonzalgo)](https://pypi.org/project/gonzalgo/)
 [![Python](https://img.shields.io/pypi/pyversions/gonzalgo)](https://pypi.org/project/gonzalgo/)
 [![License](https://img.shields.io/pypi/l/gonzalgo)](LICENSE)
-[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.21769847-blue)](https://doi.org/10.5281/zenodo.21769847)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.21769846-blue)](https://doi.org/10.5281/zenodo.21769846)
 
 `#print axioms` tells you whether *one* theorem depends on an axiom. It cannot
 tell you where an axiom is **spent** rather than inherited, how far that spending
@@ -387,7 +387,7 @@ instead of discharging it, which looks like progress and is not.
 
 This package is the tooling behind *Where Formal Libraries Spend Their Axioms:
 A Cross-Foundation Measurement, and an Avoidable Classical Dependency in Lean's
-`omega`* — [10.5281/zenodo.21769847](https://doi.org/10.5281/zenodo.21769847).
+`omega`* — [10.5281/zenodo.21769846](https://doi.org/10.5281/zenodo.21769846).
 
 Applied to Lean 4.32.1 with Mathlib (790,171 declarations, 30M dependency
 edges), it finds 280 declarations whose only route to `Classical.choice` runs

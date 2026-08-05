@@ -6,7 +6,7 @@
   "producedBy": {
     "software": "gonzalgo",
     "url": "https://pypi.org/project/gonzalgo/",
-    "paper": "https://doi.org/10.5281/zenodo.21769847"
+    "paper": "https://doi.org/10.5281/zenodo.21769846"
   },
   "measured": {
     "Lean 4": "4.32.1 with Mathlib",
