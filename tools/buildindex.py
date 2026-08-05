@@ -170,9 +170,9 @@ footer {{ border-top:1px solid var(--border); margin-top:3.5rem; padding:2rem 0;
 <p class="kicker">what formal libraries actually rest on</p>
 
 <p>
-Every library below has been checked, not asked. The columns that matter are the
-two in the middle: how many theorems rest on a proof that was never finished, and
-how many were settled by running compiled code rather than by the kernel.
+Each library here was measured directly. The two middle columns are the ones to
+read: how many theorems rest on a proof that was never finished, and how many
+were settled by running compiled code rather than by the kernel.
 </p>
 <p class="note">
 Measured with <a href="/gonzalgo/">gonzalgo</a> &middot; Lean 4.32.1 with Mathlib
@@ -216,17 +216,17 @@ the other databases declare no choice axiom.
 gonzalgo trust mathlib_split.tsv      # the Lean rows
 gonzalgo mm set.mm iset.mm nf.mm ql.mm hol.mm   # the Metamath rows</pre>
 <p class="note">
-Nothing here is asserted on anyone's authority. Every figure comes from the
-proof system's own bookkeeping &mdash; Lean's <code>collectAxioms</code>, and
-Metamath's proof structure &mdash; and the extractors are shipped with the tool.
+Every figure comes from the proof system's own bookkeeping &mdash; Lean's
+<code>collectAxioms</code> and Metamath's proof structure. The extractors ship
+with the tool, so you can re-derive any row here yourself.
 </p>
 
 <h2>Why it exists</h2>
 <p>
-&ldquo;This library rests on nothing but the kernel&rdquo; is a claim people have
-had to take on faith, because no one could check it at library scale. The
-numbers above are what checking it looks like. Where a count is zero, that is a
-result, not an absence &mdash; it means someone verified it.
+&ldquo;This library rests on nothing but the kernel&rdquo; is something people
+have had to take on faith, because checking it at library scale wasn't
+practical. The numbers above are that check. A zero in the middle columns means
+someone ran it and it came back empty.
 </p>
 
 <footer>

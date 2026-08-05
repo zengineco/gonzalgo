@@ -67,8 +67,7 @@ Yes. `--fail-on-trust`, or the GitHub Action below.
 whose meaning changes with it — and those that only use it in a *proof*, which
 merely rebuild.
 
-The short version: **kernel > sorry**. A proof is worth what it rests on, and
-this measures what it rests on.
+**kernel > sorry**
 
 ## What it found
 
@@ -117,21 +116,20 @@ Add to your MCP client's configuration:
 ```
 
 Ten tools: `audit_trust`, `why`, `impact`, `axiom_reach`, `metamath_audit`,
-`kernel_index`, and the plumbing to produce a dump from a project.
+`kernel_index`, plus the plumbing to produce a dump from a project.
 
-**The first tool is a refusal.** `scope` reports what gonzalgo *cannot* answer —
-whether a paper is correct, whether homework is right, whether text is slop —
-because the likeliest failure of a proof-shaped tool is a model reaching for it
-when asked about prose and returning something confident and meaningless. Every
-other tool repeats the precondition in its description.
+There's also a `scope` tool that reports what gonzalgo can't do — read a paper,
+mark homework, judge whether text is any good. It's there so a model asked "is
+this proof correct?" about a page of prose doesn't grab the nearest proof-shaped
+tool and return something meaningless. Every other tool restates the
+precondition in its description.
 
-What it *is* for, and this is the part that matters as more proofs are generated
-rather than written: **a generated proof that fails to compile is obvious; one
-that compiles while resting on a buried `sorry` looks exactly like success.**
-That is the gap these tools close.
+The case it's built for: a generated Lean proof that fails to compile is easy to
+spot. One that compiles while resting on a `sorry` three lemmas upstream isn't,
+and Lean only mentions it once, in a warning, at the site.
 
-`kernel_index` needs no files and no network — a model can call it cold to answer
-questions about known libraries.
+`kernel_index` runs with no files and no network, so a model can call it cold for
+figures on known libraries.
 
 ## Put it in CI, get a badge
 
