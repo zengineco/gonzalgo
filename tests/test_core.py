@@ -360,3 +360,18 @@ def test_mcp_tools_report_a_missing_dump_rather_than_raising(tmp_path):
     for fn in (mcp_server.audit_trust, mcp_server.check_dump):
         r = fn(missing)
         assert "error" in r or r.get("usable") is False
+
+
+# ---- cold start ----------------------------------------------------------
+
+def test_index_command_works_with_no_files(capsys):
+    """Someone evaluating this should get real output one line after
+    installing, without owning a Lean project. Every other command needs a
+    dump; this one needs nothing."""
+    from gonzalgo.cli import main
+    assert main(["index"]) == 0
+    out = capsys.readouterr().out
+    assert "KERNEL INDEX" in out
+    assert "Mathlib" in out and "set.mm" in out
+    assert "14 libraries" in out
+    assert "0 resting on an unfinished proof" in out

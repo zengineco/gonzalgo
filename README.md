@@ -29,7 +29,22 @@ identical definitions rather than by analogy.
 
 ```console
 $ pip install gonzalgo
+$ gonzalgo index
+
+  THE KERNEL INDEX  (2026-08-05)   what formal libraries rest on
+  library             system      theorems  unfinished  compiler   choice
+  -----------------------------------------------------------------------
+  Mathlib             Lean 4       437,429           0         0   66.62%
+  Lean core (Init)    Lean 4        45,051           0         0   23.91%
+  Std                 Lean 4        34,510           0         0   56.66%
+  Batteries           Lean 4         5,249           0         0   32.63%
+  set.mm              Metamath      47,621           0         -    1.22%
+  ...
+  14 libraries, 603,703 theorems, 0 resting on an unfinished proof.
 ```
+
+That runs the moment it's installed — no Lean, no build, no files. Everything
+below needs a Lean project.
 
 Pure Python. macOS, Windows, Linux. `numpy` is the only dependency.
 

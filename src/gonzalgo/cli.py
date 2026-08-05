@@ -133,6 +133,40 @@ def cmd_why(args) -> int:
     return 0
 
 
+def cmd_index(args) -> int:
+    """Print the bundled Kernel Index.
+
+    The only command that works the moment the package is installed — no Lean,
+    no dump, no network. Someone evaluating whether this is worth their time can
+    see real output in one line instead of building a project first.
+    """
+    import json
+    p = Path(__file__).parent / "data" / "kernel-index.json"
+    if not p.exists():
+        print("  index not bundled in this install")
+        print("  https://f-keys.com/gonzalgo/kernel-index/")
+        return 1
+    data = json.loads(p.read_text(encoding="utf-8"))
+    rows = data["rows"]
+    print(f"  THE KERNEL INDEX  ({data['version']})   what formal libraries rest on")
+    print(f"  {'library':<20}{'system':<10}{'theorems':>10}{'unfinished':>12}"
+          f"{'compiler':>10}{'choice':>9}")
+    print("  " + "-" * 71)
+    for r in rows:
+        pct = r.get("optional_reach_pct")
+        comp = r.get("compiler_trusting_theorems")
+        print(f"  {r['library'][:19]:<20}{r['system']:<10}{r['theorems']:>10,}"
+              f"{r.get('unfinished_theorems', 0):>12,}"
+              f"{('-' if comp is None else format(comp, ',')):>10}"
+              f"{('-' if pct is None else str(pct) + '%'):>9}")
+    tot = sum(r["theorems"] for r in rows)
+    unf = sum(r.get("unfinished_theorems", 0) for r in rows)
+    print(f"\n  {len(rows)} libraries, {tot:,} theorems, {unf} resting on an "
+          f"unfinished proof.")
+    print(f"  {data['url'] if 'url' in data else 'https://f-keys.com/gonzalgo/kernel-index/'}")
+    return 0
+
+
 def cmd_trust(args) -> int:
     """What is this project actually trusting, and how far does it spread?
 
@@ -299,6 +333,9 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("decl", nargs="+")
     s.add_argument("-a", "--axiom", default=lean.AXIOM)
     s.set_defaults(func=cmd_why)
+
+    s = sub.add_parser("index", help="the Kernel Index — works with no files")
+    s.set_defaults(func=cmd_index)
 
     s = sub.add_parser("trust", help="unfinished proofs and compiler-trusting results")
     s.add_argument("dump")
