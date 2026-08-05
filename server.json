@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.zengineco/gonzalgo",
   "title": "gonzalgo",
-  "description": "Reports what an already-checked Lean 4 or Metamath proof rests on: an unfinished proof inherited from upstream, a compiler-trusted result, or an optional axiom.",
+  "description": "Reports what a checked Lean 4 or Metamath proof rests on: inherited sorry, compiler trust, axioms.",
   "version": "0.5.1",
   "websiteUrl": "https://f-keys.com/gonzalgo/",
   "repository": {
