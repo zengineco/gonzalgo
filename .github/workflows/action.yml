@@ -11,6 +11,28 @@ on:
   workflow_dispatch:
 
 jobs:
+  # The two jobs below install this checkout, which is what an author wants to
+  # test. But a real user gets whatever `pip install gonzalgo` resolves to, and
+  # that path was broken and invisible until someone tried it: PyPI lagged the
+  # repo by three features and the action called a subcommand that did not exist
+  # in the published release. This job exercises the user's path.
+  published-package-has-what-the-action-calls:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install gonzalgo the way the action does
+        run: python -m pip install --quiet 'gonzalgo>=0.3'
+      - name: Every subcommand the action invokes must exist
+        run: |
+          set -euo pipefail
+          for cmd in lean-files trust; do
+            gonzalgo "$cmd" --help >/dev/null \
+              || { echo "::error::published gonzalgo lacks '$cmd'"; exit 1; }
+          done
+          echo "published package satisfies the action"
+
   clean-project-passes:
     runs-on: ubuntu-latest
     steps:

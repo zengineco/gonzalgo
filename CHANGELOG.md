@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.3.0 — 2026-08-04
+
+**`gonzalgo trust`** — what a project is actually trusting, and how far it has
+spread. Reports `sorryAx` (unfinished proof), `Lean.ofReduceBool` /
+`Lean.ofReduceNat` (what `native_decide` emits — trusts the compiler rather than
+the kernel), `Lean.trustCompiler`, and explicitly discounts `propext` and
+`Quot.sound`, which every Mathlib theorem rests on and which therefore carry no
+information.
+
+`--fail-on-trust` exits 1, so it can gate a build. A clean library can then prove
+it is clean on every commit instead of assuming it between audits.
+
+A trust axiom that no *theorem* reaches is not reported as a finding. Lean's
+environment always declares the `native_decide` primitives; only a result
+reaching one matters.
+
+**A GitHub Action.** Three lines in a Lean project's CI. See the README.
+
+**Release discipline, learned the hard way.** 0.2.0 was built and never
+published, so PyPI sat three features behind the repository while the Action —
+which installs from PyPI — called a subcommand that did not exist in the released
+version. Our own CI missed it because it installs from the checkout. The Action
+now requires `gonzalgo>=0.3` and verifies the subcommand exists before running,
+and CI has a job that installs from PyPI exactly as a user would.
+
 ## 0.2.0 — 2026-08-04
 
 **New: `gonzalgo impact` — `why` run backwards.** Given a declaration, what

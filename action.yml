@@ -47,7 +47,19 @@ runs:
 
     - name: Install gonzalgo
       shell: bash
-      run: python3 -m pip install --quiet --upgrade gonzalgo
+      # Pinned to a floor on purpose. `pip install gonzalgo` unpinned once
+      # resolved to a release predating the `trust` subcommand this action
+      # calls, and the failure surfaced as an unhelpful argparse error at the
+      # last step. A floor fails at install time with a message that names the
+      # problem.
+      run: |
+        set -euo pipefail
+        python3 -m pip install --quiet --upgrade 'gonzalgo>=0.3'
+        gonzalgo trust --help >/dev/null 2>&1 || {
+          echo "::error::installed gonzalgo lacks the 'trust' subcommand"
+          gonzalgo --help || true
+          exit 1
+        }
 
     - name: Fetch prebuilt artifacts
       if: inputs.cache == 'true'
