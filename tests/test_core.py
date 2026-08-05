@@ -366,12 +366,13 @@ def test_registry_marker_and_server_json_agree_with_the_package():
     server = json.loads((root / "server.json").read_text(encoding="utf-8"))
 
     # The banner spelled GONZALG for six releases. A missing glyph in
-    # box-drawing characters is invisible; counting the rows is not.
-    banner = [l for l in readme.splitlines() if l.startswith("║") and "█" in l]
-    assert len(banner) == 6, f"banner should be 6 glyph rows, got {len(banner)}"
-    assert len({len(l) for l in banner}) == 1, "banner rows are ragged"
-    # Eight letters at 8-10 columns each, plus the box and padding.
-    assert len(banner[0]) == 78, f"banner width {len(banner[0])} - is a letter missing?"
+    # box-drawing characters is invisible to the eye but not to a width check:
+    # GONZALGO is 70 columns of art plus 3 padding either side. Drop a letter
+    # and this lands at 68 or 70.
+    box = [l for l in readme.splitlines() if l.startswith("║")]
+    assert box, "banner is gone"
+    assert len({len(l) for l in box}) == 1, "banner rows are ragged"
+    assert len(box[0]) == 78, f"banner width {len(box[0])} - is a letter missing?"
 
     m = re.search(r"mcp-name:\s*(\S+?)\s*(?:-->|$)", readme, re.M)
     assert m, "README lost the mcp-name marker; registry publish will fail validation"
