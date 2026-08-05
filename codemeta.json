@@ -1,0 +1,64 @@
+{
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "name": "gonzalgo",
+  "description": "Provenance auditing for machine-checked mathematics. Reports what an already-checked Lean 4 or Metamath proof rests on: an unfinished proof inherited from anywhere upstream, a result obtained by trusting the compiler rather than the kernel, or an optional axiom. It proves nothing and checks no proofs.",
+  "identifier": "https://doi.org/10.5281/zenodo.21769846",
+  "codeRepository": "https://github.com/zengineco/gonzalgo",
+  "downloadUrl": "https://pypi.org/project/gonzalgo/",
+  "url": "https://f-keys.com/gonzalgo/",
+  "license": "https://spdx.org/licenses/Apache-2.0",
+  "programmingLanguage": "Python",
+  "runtimePlatform": "Python 3.10+",
+  "operatingSystem": ["Linux", "macOS", "Windows"],
+  "applicationCategory": "Formal verification",
+  "developmentStatus": "active",
+  "author": [
+    {
+      "@type": "Person",
+      "givenName": "Vince",
+      "familyName": "Gonzalez",
+      "@id": "https://orcid.org/0009-0005-3640-014X"
+    }
+  ],
+  "maintainer": {
+    "@type": "Person",
+    "givenName": "Vince",
+    "familyName": "Gonzalez",
+    "@id": "https://orcid.org/0009-0005-3640-014X"
+  },
+  "producer": {
+    "@type": "Organization",
+    "name": "F-Keys",
+    "url": "https://f-keys.com/"
+  },
+  "referencePublication": {
+    "@type": "ScholarlyArticle",
+    "name": "Where Formal Libraries Spend Their Axioms: A Cross-Foundation Measurement, and an Avoidable Classical Dependency in Lean's omega",
+    "identifier": "https://doi.org/10.5281/zenodo.21769846",
+    "author": {
+      "@type": "Person",
+      "givenName": "Vince",
+      "familyName": "Gonzalez",
+      "@id": "https://orcid.org/0009-0005-3640-014X"
+    }
+  },
+  "keywords": [
+    "Lean 4",
+    "Mathlib",
+    "Metamath",
+    "proof assistant",
+    "formal verification",
+    "axiom of choice",
+    "sorry",
+    "native_decide",
+    "dependency analysis",
+    "provenance"
+  ],
+  "softwareRequirements": ["numpy>=1.23"],
+  "relatedLink": [
+    "https://f-keys.com/gonzalgo/kernel-index/",
+    "https://f-keys.com/gonzalgo/faq/",
+    "https://github.com/marketplace/actions/gonzalgo-trust-audit"
+  ]
+}

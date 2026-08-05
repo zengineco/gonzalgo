@@ -1,0 +1,53 @@
+{
+  "title": "gonzalgo: provenance auditing for machine-checked mathematics",
+  "description": "<p>Reports what a formal library rests on. A proof assistant can confirm that a proof checks; it cannot readily tell you that the theorem is standing on an unfinished proof several files upstream, or that the result was obtained by trusting the compiler rather than the kernel. gonzalgo computes the declaration dependency graph, keeps statement dependencies separate from proof dependencies, and answers where an axiom is spent rather than inherited, which step introduced a given dependency, and whether any theorem reaches an unfinished proof or a compiler-trusting result. Supports Lean 4 and the Metamath databases set.mm, iset.mm, nf.mm, ql.mm and hol.mm, measured by one program so foundations are compared under identical definitions.</p>",
+  "upload_type": "software",
+  "license": "Apache-2.0",
+  "access_right": "open",
+  "creators": [
+    {
+      "name": "Gonzalez, Vince",
+      "orcid": "0009-0005-3640-014X"
+    }
+  ],
+  "keywords": [
+    "Lean 4",
+    "Mathlib",
+    "Metamath",
+    "proof assistant",
+    "formal verification",
+    "axiom of choice",
+    "sorry",
+    "native_decide",
+    "dependency analysis",
+    "provenance",
+    "constructive mathematics",
+    "reverse mathematics"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/zengineco/gonzalgo",
+      "relation": "isSupplementTo",
+      "resource_type": "software",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://pypi.org/project/gonzalgo/",
+      "relation": "isIdenticalTo",
+      "resource_type": "software",
+      "scheme": "url"
+    },
+    {
+      "identifier": "10.5281/zenodo.21769846",
+      "relation": "isDocumentedBy",
+      "resource_type": "publication-preprint",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "https://f-keys.com/gonzalgo/",
+      "relation": "isDescribedBy",
+      "resource_type": "other",
+      "scheme": "url"
+    }
+  ]
+}
