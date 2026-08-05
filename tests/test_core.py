@@ -353,6 +353,17 @@ def test_mcp_kernel_index_is_bundled():
     assert "Mathlib" in libs and "set.mm" in libs
 
 
+def test_mcp_server_reports_its_version_to_the_host():
+    """Driving the server through a real stdio client showed it handshaking as
+    version='' — a host prints that next to the name. It has to be the package
+    version, and it has to stay non-empty."""
+    pytest.importorskip("mcp")
+    from gonzalgo import __version__, mcp_server
+    reported = getattr(mcp_server.server, "version", None)
+    assert reported, "MCP server hands the host an empty version string"
+    assert reported == __version__
+
+
 def test_mcp_tools_report_a_missing_dump_rather_than_raising(tmp_path):
     pytest.importorskip("mcp")
     from gonzalgo import mcp_server

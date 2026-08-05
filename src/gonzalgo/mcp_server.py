@@ -30,6 +30,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from . import __version__
 from . import graph as _graph
 from . import lean, lean_files, metamath
 
@@ -64,6 +65,9 @@ exists, call `how_to_extract` and give the user the commands.
 
 server = MCPServer(
     name="gonzalgo",
+    # A host displays this in its server list and reports it in bug reports;
+    # left unset it renders as an empty string next to the name.
+    version=__version__,
     title="gonzalgo — what does this proof rest on?",
     description=(
         "Provenance auditing for machine-checked mathematics: inherited `sorry`, "
