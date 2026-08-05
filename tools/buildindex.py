@@ -130,17 +130,17 @@ html = f"""<!DOCTYPE html>
 {jsonld}
 </script>
 <style>
-:root {{ --bg:#0a0e0a; --panel:#111911; --border:#1a2e1a; --green:#39ff14; --text:#a8c8a8; --dim:#3a5a3a; --cyan:#00ffcc; }}
+:root {{ --bg:#0a0e0a; --panel:#111911; --border:#1f351f; --green:#39ff14; --text:#c3dcc3; --dim:#8fae8f; --cyan:#00ffcc; }}
 * {{ margin:0; padding:0; box-sizing:border-box; }}
 body {{ background:var(--bg); color:var(--text); font-family:'Share Tech Mono',monospace; line-height:1.65; }}
 body::before {{ content:''; position:fixed; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.07) 2px,rgba(0,0,0,0.07) 4px); pointer-events:none; z-index:9000; }}
 nav {{ position:fixed; top:0; left:0; right:0; z-index:10000; background:rgba(10,14,10,.95); border-bottom:1px solid var(--border); padding:0 2rem; height:60px; display:flex; align-items:center; justify-content:space-between; }}
-.logo {{ font-family:'VT323',monospace; font-size:28px; color:var(--green); letter-spacing:4px; text-decoration:none; }}
+.logo {{ font-family:'VT323',monospace; font-weight:400; font-size:28px; color:var(--green); letter-spacing:4px; text-decoration:none; }}
 nav a {{ color:var(--dim); text-decoration:none; }} nav a:hover {{ color:var(--green); }}
 main {{ max-width:1080px; margin:0 auto; padding:7rem 1.2rem 4rem; }}
-h1 {{ font-family:'VT323',monospace; font-size:clamp(38px,7vw,68px); color:var(--green); letter-spacing:4px; line-height:1; }}
-.kicker {{ font-family:'VT323',monospace; font-size:clamp(18px,3vw,26px); color:var(--cyan); letter-spacing:2px; margin:.5rem 0 1.5rem; }}
-h2 {{ font-family:'VT323',monospace; font-size:1.7rem; color:var(--green); margin:2.5rem 0 .8rem; letter-spacing:2px; }}
+h1 {{ font-family:'VT323',monospace; font-weight:400; font-size:clamp(38px,7vw,68px); color:var(--green); letter-spacing:4px; line-height:1; }}
+.kicker {{ font-family:'VT323',monospace; font-weight:400; font-size:clamp(18px,3vw,26px); color:var(--cyan); letter-spacing:2px; margin:.5rem 0 1.5rem; }}
+h2 {{ font-family:'VT323',monospace; font-weight:400; font-size:1.7rem; color:var(--green); margin:2.5rem 0 .8rem; letter-spacing:2px; }}
 p {{ margin-bottom:1rem; }} a {{ color:var(--green); }}
 .wrap {{ overflow-x:auto; border:1px solid var(--border); background:var(--panel); margin:1.5rem 0; }}
 table {{ width:100%; border-collapse:collapse; font-size:.88rem; min-width:820px; }}
@@ -149,7 +149,7 @@ td {{ padding:.55rem .6rem; border-bottom:1px solid #142414; }}
 td.num {{ text-align:right; font-variant-numeric:tabular-nums; }}
 td.found {{ color:var(--dim); }}
 tr:hover td {{ background:#0d120d; }}
-strong {{ color:#ff5f5f; }}
+strong {{ color:#ff8080; }}
 .note {{ color:var(--dim); font-size:.9rem; }}
 pre {{ background:#0d120d; border:1px solid var(--border); padding:1rem; overflow-x:auto; font-size:.85rem; margin:1rem 0; }}
 code {{ color:var(--cyan); }}
@@ -196,7 +196,7 @@ Measured with <a href="/gonzalgo/">gonzalgo</a> &middot; Lean 4.32.1 with Mathli
 </div>
 
 <p class="note">
-<strong style="color:#ff5f5f">Red</strong> marks a non-zero count &mdash; theorems
+<strong style="color:#ff8080">Red</strong> marks a non-zero count &mdash; theorems
 resting on an unfinished proof, or on the compiler. <em>unfinished</em> counts
 theorems reaching a <code>sorry</code> (Lean) or a <code>?</code>-bearing proof
 (Metamath) anywhere upstream, not only those that state one.
