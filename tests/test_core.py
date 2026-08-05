@@ -353,6 +353,27 @@ def test_mcp_kernel_index_is_bundled():
     assert "Mathlib" in libs and "set.mm" in libs
 
 
+def test_registry_marker_and_server_json_agree_with_the_package():
+    """The MCP Registry reads the ownership marker off the PyPI description,
+    which is this README. 0.5.1 shipped without it and PyPI versions cannot be
+    re-uploaded, so the miss cost a release. Three things must agree: the
+    marker, the name in server.json, and the version being built."""
+    import json
+    import re
+    from pathlib import Path
+    root = Path(__file__).resolve().parent.parent
+    readme = (root / "README.md").read_text(encoding="utf-8")
+    server = json.loads((root / "server.json").read_text(encoding="utf-8"))
+
+    m = re.search(r"mcp-name:\s*(\S+?)\s*(?:-->|$)", readme, re.M)
+    assert m, "README lost the mcp-name marker; registry publish will fail validation"
+    assert m.group(1) == server["name"], "marker and server.json name disagree"
+
+    from gonzalgo import __version__
+    assert server["version"] == __version__
+    assert server["packages"][0]["version"] == __version__
+
+
 def test_mcp_is_reachable_as_a_subcommand():
     """The MCP Registry entry launches `uvx --from gonzalgo[mcp] gonzalgo mcp`.
     If the subcommand stops existing, that published entry silently starts the

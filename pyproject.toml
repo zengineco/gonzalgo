@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "gonzalgo"
-version = "0.5.1"
+version = "0.5.2"
 description = "Measure where a formal library spends its axioms: Lean 4 and Metamath."
 readme = "README.md"
 license = "Apache-2.0"
