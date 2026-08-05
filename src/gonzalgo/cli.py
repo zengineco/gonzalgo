@@ -167,6 +167,24 @@ def cmd_index(args) -> int:
     return 0
 
 
+def cmd_mcp(args) -> int:
+    """Start the MCP server on stdio.
+
+    Same server as the `gonzalgo-mcp` console script. It exists as a subcommand
+    too because a package is launched by its own name — `uvx gonzalgo mcp` works
+    without knowing a second script exists, which is what the MCP Registry entry
+    and most client configurations end up invoking.
+    """
+    try:
+        from .mcp_server import main as serve
+    except SystemExit:
+        # mcp_server raises SystemExit with install instructions when the
+        # optional dependency is absent; let that message stand.
+        raise
+    serve()
+    return 0
+
+
 def cmd_trust(args) -> int:
     """What is this project actually trusting, and how far does it spread?
 
@@ -336,6 +354,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     s = sub.add_parser("index", help="the Kernel Index — works with no files")
     s.set_defaults(func=cmd_index)
+
+    s = sub.add_parser("mcp", help="start the MCP server on stdio")
+    s.set_defaults(func=cmd_mcp)
 
     s = sub.add_parser("trust", help="unfinished proofs and compiler-trusting results")
     s.add_argument("dump")

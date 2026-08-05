@@ -353,6 +353,21 @@ def test_mcp_kernel_index_is_bundled():
     assert "Mathlib" in libs and "set.mm" in libs
 
 
+def test_mcp_is_reachable_as_a_subcommand():
+    """The MCP Registry entry launches `uvx --from gonzalgo[mcp] gonzalgo mcp`.
+    If the subcommand stops existing, that published entry silently starts the
+    analysis CLI instead of a server, and every client using it breaks."""
+    import argparse
+    from gonzalgo import cli
+    parser = cli.build_parser() if hasattr(cli, "build_parser") else None
+    if parser is None:
+        # The parser is built inside main(); assert via the dispatch table.
+        assert hasattr(cli, "cmd_mcp"), "cmd_mcp is gone; server.json points at nothing"
+        return
+    with pytest.raises(SystemExit):
+        parser.parse_args(["mcp", "--nonexistent-flag"])
+
+
 def test_mcp_server_reports_its_version_to_the_host():
     """Driving the server through a real stdio client showed it handshaking as
     version='' — a host prints that next to the name. It has to be the package

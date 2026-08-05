@@ -18,6 +18,12 @@
 [![License](https://img.shields.io/pypi/l/gonzalgo)](LICENSE)
 [![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.21769846-blue)](https://doi.org/10.5281/zenodo.21769846)
 
+<!-- mcp-name: io.github.zengineco/gonzalgo -->
+<!-- ^ how the MCP Registry verifies this PyPI package belongs to that server
+     name. It reads the package description, which is this README. Removing the
+     line makes the next `mcp-publisher publish` fail package validation. -->
+
+
 `#print axioms` tells you whether *one* theorem depends on an axiom. It cannot
 tell you where an axiom is **spent** rather than inherited, how far that spending
 reaches, how much of it could be avoided, or — for a given theorem — **which step

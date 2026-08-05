@@ -1,0 +1,42 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.zengineco/gonzalgo",
+  "title": "gonzalgo",
+  "description": "Reports what an already-checked Lean 4 or Metamath proof rests on: an unfinished proof inherited from upstream, a compiler-trusted result, or an optional axiom.",
+  "version": "0.5.1",
+  "websiteUrl": "https://f-keys.com/gonzalgo/",
+  "repository": {
+    "url": "https://github.com/zengineco/gonzalgo",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "pypi",
+      "registryBaseUrl": "https://pypi.org",
+      "identifier": "gonzalgo",
+      "version": "0.5.1",
+      "runtimeHint": "uvx",
+      "runtimeArguments": [
+        {
+          "type": "named",
+          "name": "--from",
+          "value": "gonzalgo[mcp]",
+          "isRequired": true,
+          "description": "The MCP server lives behind an optional dependency so the analysis tools stay dependency-light for CLI-only users."
+        }
+      ],
+      "packageArguments": [
+        {
+          "type": "positional",
+          "value": "mcp",
+          "isRequired": true,
+          "description": "Starts the stdio server. Without it the binary runs the analysis CLI."
+        }
+      ],
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": []
+    }
+  ]
+}
