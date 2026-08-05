@@ -1,0 +1,186 @@
+{
+  "name": "The Kernel Index",
+  "description": "What formal mathematical libraries rest on: theorems depending on an unfinished proof, on the compiler rather than the kernel, and on an optional axiom. Measured by one program across two proof systems and six foundations.",
+  "version": "2026-08-05",
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "producedBy": {
+    "software": "gonzalgo",
+    "url": "https://pypi.org/project/gonzalgo/",
+    "paper": "https://doi.org/10.5281/zenodo.21769847"
+  },
+  "measured": {
+    "Lean 4": "4.32.1 with Mathlib",
+    "Metamath": "set.mm, iset.mm, nf.mm, ql.mm, hol.mm"
+  },
+  "rows": [
+    {
+      "library": "Mathlib",
+      "system": "Lean 4",
+      "foundation": "Dependent type theory",
+      "theorems": 437429,
+      "unfinished_theorems": 0,
+      "compiler_trusting_theorems": 0,
+      "optional_axiom": "choice",
+      "optional_reach": 291416,
+      "optional_reach_pct": 66.62
+    },
+    {
+      "library": "Lean core (Init)",
+      "system": "Lean 4",
+      "foundation": "Dependent type theory",
+      "theorems": 45051,
+      "unfinished_theorems": 0,
+      "compiler_trusting_theorems": 0,
+      "optional_axiom": "choice",
+      "optional_reach": 10773,
+      "optional_reach_pct": 23.91
+    },
+    {
+      "library": "Std",
+      "system": "Lean 4",
+      "foundation": "Dependent type theory",
+      "theorems": 34510,
+      "unfinished_theorems": 0,
+      "compiler_trusting_theorems": 0,
+      "optional_axiom": "choice",
+      "optional_reach": 19552,
+      "optional_reach_pct": 56.66
+    },
+    {
+      "library": "Lean core (Lean)",
+      "system": "Lean 4",
+      "foundation": "Dependent type theory",
+      "theorems": 9281,
+      "unfinished_theorems": 0,
+      "compiler_trusting_theorems": 0,
+      "optional_axiom": "choice",
+      "optional_reach": 1191,
+      "optional_reach_pct": 12.83
+    },
+    {
+      "library": "Batteries",
+      "system": "Lean 4",
+      "foundation": "Dependent type theory",
+      "theorems": 5249,
+      "unfinished_theorems": 0,
+      "compiler_trusting_theorems": 0,
+      "optional_axiom": "choice",
+      "optional_reach": 1713,
+      "optional_reach_pct": 32.63
+    },
+    {
+      "library": "Aesop",
+      "system": "Lean 4",
+      "foundation": "Dependent type theory",
+      "theorems": 771,
+      "unfinished_theorems": 0,
+      "compiler_trusting_theorems": 0,
+      "optional_axiom": "choice",
+      "optional_reach": 100,
+      "optional_reach_pct": 12.97
+    },
+    {
+      "library": "ProofWidgets",
+      "system": "Lean 4",
+      "foundation": "Dependent type theory",
+      "theorems": 165,
+      "unfinished_theorems": 0,
+      "compiler_trusting_theorems": 0,
+      "optional_axiom": "choice",
+      "optional_reach": 46,
+      "optional_reach_pct": 27.88
+    },
+    {
+      "library": "Plausible",
+      "system": "Lean 4",
+      "foundation": "Dependent type theory",
+      "theorems": 87,
+      "unfinished_theorems": 0,
+      "compiler_trusting_theorems": 0,
+      "optional_axiom": "choice",
+      "optional_reach": 6,
+      "optional_reach_pct": 6.9
+    },
+    {
+      "library": "Qq",
+      "system": "Lean 4",
+      "foundation": "Dependent type theory",
+      "theorems": 36,
+      "unfinished_theorems": 0,
+      "compiler_trusting_theorems": 0,
+      "optional_axiom": "choice",
+      "optional_reach": 7,
+      "optional_reach_pct": 19.44
+    },
+    {
+      "library": "set.mm",
+      "system": "Metamath",
+      "foundation": "ZFC set theory, classical first-order logic",
+      "theorems": 47621,
+      "axioms_used": 1447,
+      "entry_points": 17898,
+      "entries_per_theorem": 0.3758,
+      "amplification": 292.1,
+      "unfinished_theorems": 0,
+      "optional_axiom": "choice",
+      "optional_reach": 583,
+      "optional_reach_pct": 1.22
+    },
+    {
+      "library": "iset.mm",
+      "system": "Metamath",
+      "foundation": "Intuitionistic set theory",
+      "theorems": 16236,
+      "axioms_used": 480,
+      "entry_points": 6140,
+      "entries_per_theorem": 0.3782,
+      "amplification": 220.5,
+      "unfinished_theorems": 0,
+      "optional_axiom": null,
+      "optional_reach": 0,
+      "optional_reach_pct": null
+    },
+    {
+      "library": "nf.mm",
+      "system": "Metamath",
+      "foundation": "Quine's New Foundations",
+      "theorems": 5976,
+      "axioms_used": 195,
+      "entry_points": 2545,
+      "entries_per_theorem": 0.4259,
+      "amplification": 93.5,
+      "unfinished_theorems": 0,
+      "optional_axiom": null,
+      "optional_reach": 0,
+      "optional_reach_pct": null
+    },
+    {
+      "library": "ql.mm",
+      "system": "Metamath",
+      "foundation": "Quantum logic",
+      "theorems": 1140,
+      "axioms_used": 43,
+      "entry_points": 2759,
+      "entries_per_theorem": 2.4202,
+      "amplification": 6.3,
+      "unfinished_theorems": 0,
+      "optional_axiom": null,
+      "optional_reach": 0,
+      "optional_reach_pct": null
+    },
+    {
+      "library": "hol.mm",
+      "system": "Metamath",
+      "foundation": "Higher-order logic",
+      "theorems": 151,
+      "axioms_used": 43,
+      "entry_points": 175,
+      "entries_per_theorem": 1.1589,
+      "amplification": 16.7,
+      "unfinished_theorems": 0,
+      "optional_axiom": null,
+      "optional_reach": 0,
+      "optional_reach_pct": null
+    }
+  ]
+}

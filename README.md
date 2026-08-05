@@ -100,6 +100,39 @@ rest on the axiom of choice with no need. Filed upstream; the fix is one file.
 
 ---
 
+## Let a language model call it
+
+```console
+$ pip install "gonzalgo[mcp]"
+```
+
+Add to your MCP client's configuration:
+
+```json
+{
+  "mcpServers": {
+    "gonzalgo": { "command": "gonzalgo-mcp" }
+  }
+}
+```
+
+Ten tools: `audit_trust`, `why`, `impact`, `axiom_reach`, `metamath_audit`,
+`kernel_index`, and the plumbing to produce a dump from a project.
+
+**The first tool is a refusal.** `scope` reports what gonzalgo *cannot* answer —
+whether a paper is correct, whether homework is right, whether text is slop —
+because the likeliest failure of a proof-shaped tool is a model reaching for it
+when asked about prose and returning something confident and meaningless. Every
+other tool repeats the precondition in its description.
+
+What it *is* for, and this is the part that matters as more proofs are generated
+rather than written: **a generated proof that fails to compile is obvious; one
+that compiles while resting on a buried `sorry` looks exactly like success.**
+That is the gap these tools close.
+
+`kernel_index` needs no files and no network — a model can call it cold to answer
+questions about known libraries.
+
 ## Put it in CI, get a badge
 
 Three lines in any Lean 4 project. Every commit is checked for theorems resting

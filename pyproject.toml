@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "gonzalgo"
-version = "0.3.0"
+version = "0.4.0"
 description = "Measure where a formal library spends its axioms: Lean 4 and Metamath."
 readme = "README.md"
 license = "Apache-2.0"
@@ -27,6 +27,9 @@ dependencies = ["numpy>=1.23"]
 
 [project.optional-dependencies]
 dev = ["pytest>=7"]
+# The MCP server is optional so the analysis tools stay dependency-light for
+# anyone who only wants the CLI.
+mcp = ["mcp>=2.0"]
 
 [project.urls]
 Paper = "https://doi.org/10.5281/zenodo.21769847"
@@ -35,6 +38,7 @@ Issues = "https://github.com/zengineco/gonzalgo/issues"
 
 [project.scripts]
 gonzalgo = "gonzalgo.cli:main"
+gonzalgo-mcp = "gonzalgo.mcp_server:main"
 
 [tool.hatch.build.targets.wheel]
 # lean_files/ lives inside the package directory and is shipped with it; a

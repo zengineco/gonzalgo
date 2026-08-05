@@ -316,3 +316,47 @@ def test_declared_but_unreached_trust_axiom_is_not_a_finding(tmp_path, capsys):
         "T\tthm\tNat\tNat.succ\n", encoding="utf-8")
     assert main(["trust", str(p), "--fail-on-trust"]) == 0
     assert "CLEAN" in capsys.readouterr().out
+
+
+# ---- MCP server ----------------------------------------------------------
+
+def test_mcp_scope_refuses_the_questions_it_cannot_answer():
+    """The likeliest failure of the MCP server is a model reaching for a
+    proof-shaped tool when asked about prose. `scope` exists to stop that, so
+    its refusals are load-bearing and pinned here."""
+    pytest.importorskip("mcp")
+    from gonzalgo import mcp_server
+    s = mcp_server.scope()
+    joined = " ".join(s["cannot_answer"]).lower()
+    for forbidden in ("homework", "slop", "natural-language", "paper"):
+        assert forbidden in joined
+    assert "formalise" in s["if_you_cannot_answer"].lower()
+
+
+def test_mcp_exposes_the_expected_tools():
+    pytest.importorskip("mcp")
+    import asyncio
+    from gonzalgo import mcp_server
+    names = {t.name for t in asyncio.run(mcp_server.server.list_tools())}
+    assert {"scope", "audit_trust", "why", "impact", "kernel_index"} <= names
+
+
+def test_mcp_kernel_index_is_bundled():
+    """The index answers questions with no dump and no network, which is the
+    only tool a model can usefully call cold."""
+    pytest.importorskip("mcp")
+    from gonzalgo import mcp_server
+    idx = mcp_server.kernel_index()
+    assert idx.get("rows"), "kernel-index.json is not bundled in the package"
+    assert len(idx["rows"]) >= 14
+    libs = {r["library"] for r in idx["rows"]}
+    assert "Mathlib" in libs and "set.mm" in libs
+
+
+def test_mcp_tools_report_a_missing_dump_rather_than_raising(tmp_path):
+    pytest.importorskip("mcp")
+    from gonzalgo import mcp_server
+    missing = str(tmp_path / "nope.tsv")
+    for fn in (mcp_server.audit_trust, mcp_server.check_dump):
+        r = fn(missing)
+        assert "error" in r or r.get("usable") is False
