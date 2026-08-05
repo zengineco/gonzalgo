@@ -35,6 +35,41 @@ Pure Python. macOS, Windows, Linux. `numpy` is the only dependency.
 
 ---
 
+## Questions this answers
+
+**How do I know if my Lean proof depends on a `sorry`?**
+Lean warns once, on the line you typed it. It does not warn you about the theorem
+three files later that uses that lemma and is therefore not proved either. Run
+`gonzalgo trust` and it reports every theorem that reaches a `sorry` anywhere
+upstream, however far.
+
+**How do I find a `sorry` I inherited from a dependency?**
+Same command. The audit is over the whole environment, so a `sorry` in a library
+you import is reported exactly like one in your own file.
+
+**Does my project use `native_decide` anywhere?**
+`native_decide` results are obtained by compiling and running code and believing
+the answer — the compiler and runtime are trusted, not the kernel, and soundness
+bugs have been found there. `gonzalgo trust` reports `Lean.ofReduceBool` and
+`Lean.ofReduceNat`, the axioms it emits, and how many theorems inherit them.
+
+**What axioms does this Lean theorem actually depend on, and why?**
+`#print axioms` tells you *whether*. `gonzalgo why <decl> -a <axiom>` gives the
+shortest path from the theorem to the axiom, labelling each step as a statement
+dependency or a proof dependency — so you can see which step introduced it and
+whether it is reroutable.
+
+**Can I fail CI when a proof rests on something unfinished?**
+Yes. `--fail-on-trust`, or the GitHub Action below.
+
+**If I change this definition, what breaks?**
+`gonzalgo impact` splits dependents into those that name it in a *statement* —
+whose meaning changes with it — and those that only use it in a *proof*, which
+merely rebuild.
+
+The short version: **kernel > sorry**. A proof is worth what it rests on, and
+this measures what it rests on.
+
 ## What it found
 
 Pointed at Lean 4.32.1 with Mathlib — 790,171 declarations, 30 million

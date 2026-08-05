@@ -1,0 +1,50 @@
+cff-version: 1.2.0
+title: >-
+  gonzalgo: provenance auditing for machine-checked mathematics
+message: >-
+  If you use this software or its results, please cite the accompanying paper.
+type: software
+authors:
+  - family-names: Gonzalez
+    given-names: Vince
+    orcid: 'https://orcid.org/0009-0005-3640-014X'
+repository-code: 'https://github.com/zengineco/gonzalgo'
+url: 'https://pypi.org/project/gonzalgo/'
+abstract: >-
+  Reports what a formal library rests on. A proof assistant can confirm that a
+  proof checks; it cannot readily tell you that the theorem is standing on an
+  unfinished proof several files upstream, or on trusting the compiler rather
+  than the kernel. gonzalgo computes the declaration dependency graph, keeps
+  statement dependencies separate from proof dependencies, and answers three
+  questions no assistant answers directly: where an axiom is spent rather than
+  inherited, which step introduced a given dependency, and whether any theorem
+  reaches an unfinished proof or a compiler-trusting result. Supports Lean 4 and
+  the Metamath databases set.mm, iset.mm, nf.mm, ql.mm and hol.mm, measured by
+  one program so foundations are compared under identical definitions.
+keywords:
+  - Lean 4
+  - Mathlib
+  - Metamath
+  - proof assistant
+  - formal verification
+  - axiom of choice
+  - sorry
+  - native_decide
+  - dependency analysis
+  - provenance
+  - constructive mathematics
+  - reverse mathematics
+license: Apache-2.0
+preferred-citation:
+  type: article
+  title: >-
+    Where Formal Libraries Spend Their Axioms: A Cross-Foundation Measurement,
+    and an Avoidable Classical Dependency in Lean's omega
+  authors:
+    - family-names: Gonzalez
+      given-names: Vince
+      orcid: 'https://orcid.org/0009-0005-3640-014X'
+  doi: 10.5281/zenodo.21769847
+  year: 2026
+  publisher:
+    name: Zenodo
