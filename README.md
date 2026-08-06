@@ -381,17 +381,24 @@ name = "gonzalgo"
 git = "https://github.com/zengineco/gonzalgo"
 ```
 
-Then two lines anywhere in your project:
+Then no scratch file at all — it imports the target module at runtime:
+
+```
+$ lake exe gonzalgo MyProject myproject.tsv
+importing MyProject ...
+declarations written: 204543
+now run:  gonzalgo check myproject.tsv
+```
+
+Everything the module imports is included, and the fifth output column records
+which module each declaration came from, which is what separates your project
+from its dependencies afterwards.
+
+If you would rather call it from inside a file, the library is two lines:
 
 ```lean
 import Gonzalgo
 #eval Gonzalgo.dumpSplit "myproject.tsv"
-```
-
-```
-$ lake env lean Dump.lean
-declarations written: 204553
-now run:  gonzalgo check myproject.tsv
 ```
 
 The library requires Lean only — no Mathlib dependency, deliberately, since

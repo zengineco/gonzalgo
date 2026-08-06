@@ -15,3 +15,10 @@ defaultTargets = ["Gonzalgo"]
 
 [[lean_lib]]
 name = "Gonzalgo"
+
+[[lean_exe]]
+name = "gonzalgo"
+root = "Main"
+# Imports the target module at runtime, so one binary works against any project
+# Lake can build rather than needing a scratch file per project.
+supportInterpreter = true
