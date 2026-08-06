@@ -353,6 +353,31 @@ def test_mcp_kernel_index_is_bundled():
     assert "Mathlib" in libs and "set.mm" in libs
 
 
+def test_profile_reports_null_rather_than_zero_for_an_absent_construct(tmp_path, capsys):
+    """The rule that keeps a profile honest: Metamath has no native_decide, so
+    `compiler_trusted` there is not-applicable, not zero. Writing 0 would be a
+    positive claim nobody measured. Same for any Lean environment that does not
+    contain the axiom at all."""
+    import json
+    dump = tmp_path / "tiny.tsv"
+    # A theorem citing nothing exotic: no sorryAx, no ofReduceBool in scope.
+    dump.write_text(
+        "A\tpropext\t\t\tInit.Core\n"
+        "T\tfoo\tEq\tpropext\tMy.Mod\n"
+        "T\tbar\tEq\tfoo\tMy.Mod\n",
+        encoding="utf-8", newline="\n")
+    from gonzalgo.cli import main
+    assert main(["profile", str(dump), "--name", "Tiny"]) == 0
+    out = capsys.readouterr().out
+    prof = json.loads(out[out.index("{"):])
+    assert prof["unfinished"]["theorems_reaching"] is None, \
+        "sorryAx is absent from this environment; that is null, not 0"
+    assert prof["compiler_trusted"]["theorems_reaching"] is None
+    assert prof["counts"]["theorems"] == 2
+    names = {a["name"] for a in prof["assumptions"]}
+    assert "propext" in names and "sorryAx" not in names
+
+
 def test_registry_marker_and_server_json_agree_with_the_package():
     """The MCP Registry reads the ownership marker off the PyPI description,
     which is this README. 0.5.1 shipped without it and PyPI versions cannot be

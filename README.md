@@ -315,6 +315,46 @@ $ gonzalgo mm set.mm iset.mm nf.mm
 
 ---
 
+## Kernel Trust Profile
+
+`gonzalgo profile` writes what a library rests on as JSON, meant to be committed
+and read by other programs:
+
+```
+$ lake exe gonzalgo MyProject myproject.tsv
+$ gonzalgo profile myproject.tsv --name MyProject -o kernel-trust.json
+```
+
+```json
+{
+  "ktp_version": "0.1",
+  "subject": { "name": "Lean core + Std", "revision": "…", "system": "Lean 4" },
+  "counts": { "theorems": 88842 },
+  "unfinished":       { "theorems_reaching": 0, "axioms": ["sorryAx"] },
+  "compiler_trusted": { "theorems_reaching": 0 },
+  "assumptions": [
+    { "name": "Classical.choice", "kind": "optional",
+      "entry_points": 24, "reach": { "theorems": 31516, "fraction": 0.3548 },
+      "via": "both" }
+  ]
+}
+```
+
+Two rules do most of the work. **An unmeasured field is `null`, never `0`** —
+Metamath has no `native_decide`, so its `compiler_trusted` count is
+not-applicable rather than zero, and writing zero would be a claim nobody made.
+And **`revision` is refused on a dirty tree**, because a profile whose commit
+does not describe what was measured cannot be reproduced by anyone else.
+
+There is no summary score, deliberately. A theorem either reaches an unfinished
+proof or it does not; averaging that against anything else invents precision the
+measurement does not have.
+
+Full specification: [`ktp/SPEC.md`](https://github.com/zengineco/universal-cover/blob/main/ktp/SPEC.md).
+A sample is in [`examples/lean-core-kernel-trust.json`](examples/lean-core-kernel-trust.json).
+
+---
+
 ## Reach versus amplification
 
 Under inlining and factoring — operations that change how a library is written,

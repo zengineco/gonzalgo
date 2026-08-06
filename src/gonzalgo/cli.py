@@ -237,6 +237,133 @@ def cmd_trust(args) -> int:
     return 0
 
 
+def _revision(explicit: str | None) -> str | None:
+    """The commit the measurement describes.
+
+    Without it a profile is not recomputable by a third party, which is the
+    whole point of the format, so this tries git before giving up and writing
+    null. A dirty tree yields null rather than a hash that does not describe
+    what was actually measured.
+    """
+    if explicit:
+        return explicit
+    import subprocess
+    try:
+        dirty = subprocess.run(["git", "status", "--porcelain"],
+                               capture_output=True, text=True, timeout=15)
+        if dirty.returncode != 0:
+            return None
+        if dirty.stdout.strip():
+            return None
+        r = subprocess.run(["git", "rev-parse", "HEAD"],
+                           capture_output=True, text=True, timeout=15)
+        return r.stdout.strip() or None if r.returncode == 0 else None
+    except Exception:
+        return None
+
+
+def _lean_version(explicit: str | None) -> str | None:
+    if explicit:
+        return explicit
+    p = Path("lean-toolchain")
+    if p.exists():
+        return p.read_text(encoding="utf-8").strip() or None
+    return None
+
+
+def cmd_profile(args) -> int:
+    """Emit a Kernel Trust Profile: what this library rests on, as JSON.
+
+    The measurements are the same ones `trust` prints. The difference is that a
+    profile is meant to be committed and read by other programs, so it follows
+    the rules in the specification — most importantly that an unmeasured field
+    is `null` and never `0`. A zero is a positive claim.
+    """
+    import json
+    from . import __version__
+
+    path = Path(args.dump)
+    g = _load(path)
+    thms = [i for i, k in g.kind.items() if k == "T"]
+    n_thms = len(thms)
+
+    def reaching(name: str) -> int | None:
+        if name not in g.ids:
+            return None
+        mask = g.dependents(name)
+        return sum(1 for i in thms if mask[i])
+
+    def hatch(names: list[str]) -> dict:
+        present = [n for n in names if n in g.ids]
+        if not present:
+            # Not "zero theorems reach it" — the construct does not exist in
+            # this environment at all. R2: that is null, not 0.
+            return {"theorems_reaching": None, "axioms": names}
+        total = set()
+        for n in present:
+            mask = g.dependents(n)
+            total |= {i for i in thms if mask[i]}
+        return {"theorems_reaching": len(total), "axioms": present}
+
+    assumptions = []
+    known = [(n, "escape-hatch") for n in lean.ESCAPE_HATCHES
+             if n not in ("Classical.choice", "propext", "Quot.sound")]
+    known += [("Classical.choice", "optional"),
+              ("propext", "foundational"), ("Quot.sound", "foundational")]
+
+    for name, kind in known:
+        if name not in g.ids:
+            continue
+        n = reaching(name)
+        stmt, proof = g.direct_dependents(name)
+        via = ("both" if stmt and proof else
+               "statement" if stmt else "proof" if proof else None)
+        assumptions.append({
+            "name": name,
+            "kind": kind,
+            "entry_points": len(g.entry_points(name, via=graph.PROOF)),
+            "reach": {"theorems": n,
+                      "fraction": round(n / n_thms, 4) if n_thms and n is not None else None},
+            "via": via,
+        })
+
+    profile = {
+        "ktp_version": "0.1",
+        "generated_at": _today(),
+        "generated_by": {"tool": "gonzalgo", "version": __version__,
+                         "url": "https://pypi.org/project/gonzalgo/"},
+        "subject": {
+            "name": args.name or Path.cwd().name,
+            "system": "Lean 4",
+            "system_version": _lean_version(args.system_version),
+            "revision": _revision(args.revision),
+            "foundation": "dependent type theory",
+            "url": None,
+        },
+        "counts": {"theorems": n_thms, "declarations": len(g.kind)},
+        "unfinished": hatch(["sorryAx"]),
+        "compiler_trusted": hatch(["Lean.ofReduceBool", "Lean.ofReduceNat",
+                                   "Lean.trustCompiler"]),
+        "assumptions": assumptions,
+    }
+
+    text = json.dumps(profile, indent=2, ensure_ascii=False) + "\n"
+    if args.out:
+        Path(args.out).write_text(text, encoding="utf-8", newline="\n")
+        print(f"  wrote {args.out}")
+        if profile["subject"]["revision"] is None:
+            print("  note: revision is null — commit your tree, or pass "
+                  "--revision, or this profile is not reproducible by anyone else")
+    else:
+        print(text, end="")
+    return 0
+
+
+def _today() -> str:
+    from datetime import date
+    return date.today().isoformat()
+
+
 def cmd_impact(args) -> int:
     """`why` run backwards: if I change this, what breaks and how badly?"""
     path = Path(args.dump)
@@ -357,6 +484,15 @@ def build_parser() -> argparse.ArgumentParser:
 
     s = sub.add_parser("mcp", help="start the MCP server on stdio")
     s.set_defaults(func=cmd_mcp)
+
+    s = sub.add_parser("profile", help="emit a Kernel Trust Profile (JSON)")
+    s.add_argument("dump")
+    s.add_argument("-o", "--out", help="write here instead of stdout")
+    s.add_argument("--name", help="library name (default: current directory)")
+    s.add_argument("--revision", help="commit measured (default: git HEAD if clean)")
+    s.add_argument("--system-version", dest="system_version",
+                   help="toolchain (default: ./lean-toolchain)")
+    s.set_defaults(func=cmd_profile)
 
     s = sub.add_parser("trust", help="unfinished proofs and compiler-trusting results")
     s.add_argument("dump")

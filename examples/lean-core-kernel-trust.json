@@ -1,0 +1,107 @@
+{
+  "ktp_version": "0.1",
+  "generated_at": "2026-08-05",
+  "generated_by": {
+    "tool": "gonzalgo",
+    "version": "0.5.2",
+    "url": "https://pypi.org/project/gonzalgo/"
+  },
+  "subject": {
+    "name": "Lean core + Std",
+    "system": "Lean 4",
+    "system_version": "leanprover/lean4:v4.32.1",
+    "revision": null,
+    "foundation": "dependent type theory",
+    "url": null
+  },
+  "counts": {
+    "theorems": 88842,
+    "declarations": 204543
+  },
+  "unfinished": {
+    "theorems_reaching": 0,
+    "axioms": [
+      "sorryAx"
+    ]
+  },
+  "compiler_trusted": {
+    "theorems_reaching": 0,
+    "axioms": [
+      "Lean.ofReduceBool",
+      "Lean.ofReduceNat",
+      "Lean.trustCompiler"
+    ]
+  },
+  "assumptions": [
+    {
+      "name": "sorryAx",
+      "kind": "escape-hatch",
+      "entry_points": 0,
+      "reach": {
+        "theorems": 0,
+        "fraction": 0.0
+      },
+      "via": null
+    },
+    {
+      "name": "Lean.ofReduceBool",
+      "kind": "escape-hatch",
+      "entry_points": 0,
+      "reach": {
+        "theorems": 0,
+        "fraction": 0.0
+      },
+      "via": null
+    },
+    {
+      "name": "Lean.ofReduceNat",
+      "kind": "escape-hatch",
+      "entry_points": 0,
+      "reach": {
+        "theorems": 0,
+        "fraction": 0.0
+      },
+      "via": null
+    },
+    {
+      "name": "Lean.trustCompiler",
+      "kind": "escape-hatch",
+      "entry_points": 2,
+      "reach": {
+        "theorems": 0,
+        "fraction": 0.0
+      },
+      "via": "proof"
+    },
+    {
+      "name": "Classical.choice",
+      "kind": "optional",
+      "entry_points": 24,
+      "reach": {
+        "theorems": 31516,
+        "fraction": 0.3547
+      },
+      "via": "both"
+    },
+    {
+      "name": "propext",
+      "kind": "foundational",
+      "entry_points": 13244,
+      "reach": {
+        "theorems": 70150,
+        "fraction": 0.7896
+      },
+      "via": "both"
+    },
+    {
+      "name": "Quot.sound",
+      "kind": "foundational",
+      "entry_points": 56,
+      "reach": {
+        "theorems": 49508,
+        "fraction": 0.5573
+      },
+      "via": "both"
+    }
+  ]
+}
