@@ -1,0 +1,17 @@
+name = "gonzalgo"
+version = "0.5.2"
+description = "Write out the declaration graph of a Lean environment, statement dependencies kept apart from proof dependencies, so you can find what a theorem actually rests on."
+keywords = ["axioms", "provenance", "sorry", "native_decide", "dependency-analysis"]
+homepage = "https://f-keys.com/gonzalgo/"
+license = "Apache-2.0"
+licenseFiles = ["LICENSE", "NOTICE"]
+readmeFile = "README.md"
+defaultTargets = ["Gonzalgo"]
+
+# No dependency on Mathlib on purpose. This library is imported *into* whatever
+# project is being measured, so pinning a Mathlib revision here would force a
+# version on every user and make the package unusable for anyone on a different
+# one. It needs only Lean itself.
+
+[[lean_lib]]
+name = "Gonzalgo"

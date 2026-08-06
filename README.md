@@ -370,9 +370,55 @@ lean.eligibility(dump, g).ceiling         # what fraction could be removed
 
 ---
 
+## As a Lake package
+
+This repository is also a Lean library, so the extractor can be a dependency
+rather than a file you copy and edit. Add to your `lakefile.toml`:
+
+```toml
+[[require]]
+name = "gonzalgo"
+git = "https://github.com/zengineco/gonzalgo"
+```
+
+Then two lines anywhere in your project:
+
+```lean
+import Gonzalgo
+#eval Gonzalgo.dumpSplit "myproject.tsv"
+```
+
+```
+$ lake env lean Dump.lean
+declarations written: 204553
+now run:  gonzalgo check myproject.tsv
+```
+
+The library requires Lean only — no Mathlib dependency, deliberately, since
+pinning a Mathlib revision here would force one on every project being measured.
+
+Run against Lean core and Std alone, that gives:
+
+```
+axiom                  declared  direct  theorems
+sorryAx                     yes       0         0
+Lean.ofReduceBool           yes       0         0
+Classical.choice            yes      32    31,516
+propext                     yes  13,246    70,150
+
+CLEAN: no theorem here rests on an unfinished proof or on the compiler.
+```
+
+88,842 theorems, and 32 declarations spend `Classical.choice` where 31,516
+inherit it.
+
+---
+
 ## Shipped Lean sources
 
-`gonzalgo lean-files` writes these into a directory of your choosing:
+`gonzalgo lean-files` writes these into a directory of your choosing. Prefer the
+Lake package above for `Split.lean`'s job; these are for the analyses that go
+beyond extraction, and for projects not using Lake.
 
 | file | what it does |
 |---|---|
