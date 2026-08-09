@@ -496,7 +496,35 @@ the kernel: 276 accepted, 4 rejected, 275 left free of `Classical.choice`.
 
 ---
 
-## Attribution and licence
+## Who wrote this, and how to cite it
+
+**Vince Gonzalez** — [ORCID 0009-0005-3640-014X](https://orcid.org/0009-0005-3640-014X)
+· [f-keys.com/gonzalgo](https://f-keys.com/gonzalgo/)
+
+```bibtex
+@software{gonzalgo,
+  author  = {Gonzalez, Vince},
+  title   = {gonzalgo: axiom provenance for Lean 4 and Metamath},
+  year    = {2026},
+  url     = {https://github.com/zengineco/gonzalgo},
+  doi     = {10.5281/zenodo.21769846},
+  license = {Apache-2.0}
+}
+```
+
+Archived at Software Heritage:
+`swh:1:snp:b2955af0bc594c5972fcaf7689365c9243d3b9fb`, which resolves whether or
+not this repository does.
+
+**Papers.** Both CC-BY, both with archives that regenerate every figure from the
+shipped data with one command.
+
+- *Where Formal Libraries Spend Their Axioms* —
+  [10.5281/zenodo.21769846](https://doi.org/10.5281/zenodo.21769846)
+- *Why Tactic-Level Rates Cannot Attribute Classical Dependencies in Lean* —
+  [10.5281/zenodo.21853489](https://doi.org/10.5281/zenodo.21853489)
+
+## Licence
 
 Apache-2.0. See `LICENSE` and `NOTICE`.
 
