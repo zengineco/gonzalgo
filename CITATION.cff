@@ -12,10 +12,12 @@ repository-code: 'https://github.com/zengineco/gonzalgo'
 url: 'https://pypi.org/project/gonzalgo/'
 identifiers:
   - type: swh
-    value: 'swh:1:snp:b2955af0bc594c5972fcaf7689365c9243d3b9fb'
+    value: 'swh:1:dir:871f62fca5b737da9b4f99516d3689d23ffbc60d'
     description: >-
-      Software Heritage snapshot, archived 2026-08-09. Resolves independently of
-      GitHub.
+      Software Heritage identifier for the archived source tree, 2026-08-09.
+      Resolves independently of GitHub. The CFF schema accepts only the core
+      form; the qualified identifier, carrying origin, visit and anchor, is in
+      codemeta.json.
 abstract: >-
   Reports what a formal library rests on. A proof assistant can confirm that a
   proof checks; it cannot readily tell you that the theorem is standing on an

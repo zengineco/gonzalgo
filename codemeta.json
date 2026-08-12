@@ -5,10 +5,10 @@
   "description": "Provenance auditing for machine-checked mathematics. Reports what an already-checked Lean 4 or Metamath proof rests on: an unfinished proof inherited from anywhere upstream, a result obtained by trusting the compiler rather than the kernel, or an optional axiom. It proves nothing and checks no proofs.",
   "identifier": [
     "https://doi.org/10.5281/zenodo.21769846",
-    "swh:1:snp:b2955af0bc594c5972fcaf7689365c9243d3b9fb"
+    "swh:1:dir:871f62fca5b737da9b4f99516d3689d23ffbc60d;origin=https://github.com/zengineco/gonzalgo;visit=swh:1:snp:b2955af0bc594c5972fcaf7689365c9243d3b9fb;anchor=swh:1:rev:1eb3a0c60ac249792fffde96ff825a5a21128788"
   ],
   "codeRepository": "https://github.com/zengineco/gonzalgo",
-  "archivedAt": "https://archive.softwareheritage.org/swh:1:snp:b2955af0bc594c5972fcaf7689365c9243d3b9fb;origin=https://github.com/zengineco/gonzalgo",
+  "archivedAt": "https://archive.softwareheritage.org/swh:1:dir:871f62fca5b737da9b4f99516d3689d23ffbc60d;origin=https://github.com/zengineco/gonzalgo;visit=swh:1:snp:b2955af0bc594c5972fcaf7689365c9243d3b9fb;anchor=swh:1:rev:1eb3a0c60ac249792fffde96ff825a5a21128788",
   "downloadUrl": "https://pypi.org/project/gonzalgo/",
   "url": "https://f-keys.com/gonzalgo/",
   "license": "https://spdx.org/licenses/Apache-2.0",

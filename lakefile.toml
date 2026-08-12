@@ -1,6 +1,9 @@
 name = "gonzalgo"
 version = "0.5.2"
-description = "Write out the declaration graph of a Lean environment, statement dependencies kept apart from proof dependencies, so you can find what a theorem actually rests on."
+# Reservoir renders this field as the package's description, so it has to say
+# what the tool is for rather than how it works. It previously described the
+# extractor, which made the listing read as a graph dumper.
+description = "Axiom provenance for Lean 4: which step introduced an axiom, and whether the theorem's own statement required it. Finds theorems resting on an inherited sorry or on native_decide, and keeps statement dependencies apart from proof dependencies."
 keywords = ["axioms", "provenance", "sorry", "native_decide", "dependency-analysis"]
 homepage = "https://f-keys.com/gonzalgo/"
 license = "Apache-2.0"

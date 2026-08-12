@@ -512,9 +512,10 @@ the kernel: 276 accepted, 4 rejected, 275 left free of `Classical.choice`.
 }
 ```
 
-Archived at Software Heritage:
-`swh:1:snp:b2955af0bc594c5972fcaf7689365c9243d3b9fb`, which resolves whether or
-not this repository does.
+Archived at Software Heritage as
+`swh:1:dir:871f62fca5b737da9b4f99516d3689d23ffbc60d`, which resolves whether or
+not this repository does. The qualified form, carrying the origin, visit and
+anchor, is in `codemeta.json`.
 
 **Papers.** Both CC-BY, both with archives that regenerate every figure from the
 shipped data with one command.
