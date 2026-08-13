@@ -57,14 +57,28 @@ and the number that actually compiled — and check that they sum.
 gonzalgo trust dump.tsv
 ```
 
-**2. Separate the two causes of `sorryAx`.**
+**2. Separate the three outcomes of a failed proof.**
 
-A `sorry` in the source is a proof nobody finished. A failed elaboration is a proof
-the model produced that Lean rejected and admitted anyway. Both surface identically
-in an axiom report. Cross-reference the build log against the axiom report: a
-declaration carrying `sorryAx` whose source contains no `sorry` is the second kind.
-If you cannot separate them from the evidence available, say so rather than
-choosing.
+Lean's `sorry` is implemented by `sorryAx`, and the elaborator emits a *synthetic*
+one when a tactic fails to close a goal or an expression fails to typecheck.
+
+1. A `sorry` in the source. In the environment, carrying `sorryAx`.
+2. A failed elaboration that was admitted anyway. Also in the environment, also
+   carrying `sorryAx`, and identical to case 1 in an axiom report.
+3. A failure whose declaration **never entered the environment**. Invisible to an
+   axiom report, because there is nothing there to report on.
+
+Case 3 is the one that has actually fooled a benchmark. Lean issue #8212: `apply?`
+created a synthetic `sorry` without logging an error, so `lake build --wfail` exited
+0 while the theorem was never added — and DeepSeek-Prover-V2 output hit exactly
+that. Kim Morrison's rule on Zulip is the one to follow: verify that the
+declaration you are claiming to have proved is in the environment.
+
+So an audit needs two passes, not one: what was submitted versus what entered the
+environment, then what entered versus what carries `sorryAx`. In the measured
+corpus that split was 1 unparsable header, 270 that never entered, 560 admitted
+with `sorryAx`. Cases 1 and 2 need the source or build log to separate; if you
+cannot, say so rather than choosing.
 
 **3. Check for compiler-trusted results.**
 

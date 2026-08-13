@@ -144,12 +144,30 @@ classical on everything it closes and that is architectural rather than
 defective. `norm_num` carries a genuinely avoidable dependence and ranks *below*
 the floor. Do not rank tactics by this number.
 
-**`sorryAx` has two very different causes.** One is a `sorry` somebody typed. The
-other is a proof that failed to elaborate: Lean admits the declaration into the
-environment carrying `sorryAx`, and in an axiom report the two are
-indistinguishable. This matters when auditing generated proofs — a declaration
-that "compiles" in the sense of appearing in the environment may not have been
-proved at all. Say which case you found, or say you cannot tell.
+**A failed proof has three outcomes, and only two of them are visible here.**
+Lean's `sorry` is implemented by `sorryAx`, and the elaborator emits a
+*synthetic* one when a tactic fails to close a goal or an expression fails to
+typecheck. So:
+
+1. A `sorry` somebody typed. The declaration is in the environment carrying
+   `sorryAx`.
+2. A proof that failed to elaborate but was still admitted. Also in the
+   environment, also carrying `sorryAx`, and an axiom report cannot tell it
+   apart from case 1.
+3. A proof that failed and whose declaration **never entered the environment at
+   all**. This one is invisible to a dump — there is nothing to measure — and it
+   is the case that has actually bitten a benchmark. Lean issue #8212: `apply?`
+   created a synthetic `sorry` without logging an error, so `lake build --wfail`
+   exited 0 while the theorem was never added. Kim Morrison's conclusion on
+   Zulip is the right rule: verify the declaration you are claiming is in the
+   environment.
+
+Cases 1 and 2 look identical in an axiom report; distinguishing them needs the
+source or the build log. Case 3 does not appear in an axiom report at all, so a
+corpus audit must count what entered the environment separately from what was
+submitted. In one measured corpus of 10,000 generated proofs the split was 1
+unparsable, 270 that never entered, and 560 admitted carrying `sorryAx`.
+Reporting those as one number loses the distinction that matters.
 
 **Distinguish the axiom from its primitives.** In Lean, most classical
 dependence arrives through `Classical.propDecidable` and
