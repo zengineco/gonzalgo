@@ -50,7 +50,13 @@ def dumpSplit (out : System.FilePath) : CoreM Unit := do
     -- Module as a fifth column. Readers taking the first four are unaffected,
     -- and without it a dump cannot answer which file a declaration lives in,
     -- which is the question a maintainer can actually act on.
-    let mod := (env.getModuleFor? name).getD `«?»
+    --
+    -- Resolved through the module index rather than by name: a declaration
+    -- defined in this file rather than imported has no index, and the fallback
+    -- has to be a value the column can carry rather than an error.
+    let mod : Name := match env.getModuleIdxFor? name with
+      | some idx => env.header.moduleNames[idx.toNat]?.getD `«?»
+      | none     => `«?»
     h.putStrLn s!"{kindOf ci}\t{name}\t{tdeps}\t{vdeps}\t{mod}"
     n := n + 1
   h.flush
