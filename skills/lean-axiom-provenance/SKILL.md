@@ -9,8 +9,11 @@ description: >-
   a `sorry` is inherited from a dependency, why a theorem needs
   `Classical.choice`, whether that dependence could be removed, what breaks if a
   definition changes, or wants a CI gate that fails on an unfinished proof. Also
-  for the same questions about Metamath databases. This reads proofs the system
-  has already checked — it proves nothing and checks no proofs itself.
+  for the same questions about Metamath databases, and for auditing a Lean repo
+  or formalization generally — what its trusted base is, whether a green build
+  means anything, whether `sorry`, `native_decide` or a custom `axiom` is
+  reachable from its headline theorem. This reads proofs the system has already
+  checked — it proves nothing and checks no proofs itself.
 ---
 
 # Lean axiom provenance
