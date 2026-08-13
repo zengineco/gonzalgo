@@ -1,0 +1,21 @@
+{
+  "name": "lean-axiom-provenance",
+  "interface": {
+    "displayName": "Lean Axiom Provenance"
+  },
+  "plugins": [
+    {
+      "name": "lean-axiom-provenance",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/zengineco/gonzalgo.git",
+        "ref": "main"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

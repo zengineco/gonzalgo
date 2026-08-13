@@ -1,0 +1,26 @@
+{
+  "name": "lean-axiom-provenance",
+  "description": "Find out what a Lean 4 project rests on and why — inherited sorry, native_decide, and which step introduced an axiom",
+  "author": {
+    "name": "Vincent Gonzalez"
+  },
+  "repository": "https://github.com/zengineco/gonzalgo",
+  "license": "Apache-2.0",
+  "keywords": [
+    "lean4",
+    "mathlib",
+    "metamath",
+    "formal-verification",
+    "axiom-of-choice",
+    "sorry",
+    "native_decide",
+    "provenance"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Lean Axiom Provenance",
+    "shortDescription": "What your Lean proof rests on, and which step put it there",
+    "longDescription": "`#print axioms` says a theorem depends on Classical.choice. It does not say which step introduced it, whether the theorem's own statement required it, or whether a constructive route exists. This reports every theorem reaching a sorry anywhere upstream, everything settled by native_decide rather than the kernel, and the shortest path from any declaration to any axiom with each hop labelled a statement dependency or a proof dependency — the label being the point, since a proof edge can often be rerouted and a statement edge cannot. Also answers what breaks downstream if a definition changes, and gates CI on an unfinished proof. Works on Lean 4 and on the Metamath databases set.mm, iset.mm, nf.mm, ql.mm and hol.mm. It reads proofs the system has already checked; it proves nothing itself.",
+    "category": "Developer Tools"
+  }
+}
