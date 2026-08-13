@@ -1,0 +1,208 @@
+# Measure what Mathlib rests on, every release, without anyone sitting there.
+#
+# A dump is ~650 MB and takes ~20 minutes to produce, so doing this by hand is a
+# chore nobody keeps up. Doing it here turns a series of snapshots into a time
+# series, which is the artifact: "the axiom roster held across v4.32 -> v4.33"
+# is a fact, and twelve of those in a row is a dataset.
+#
+# The dump itself never enters the repository. What gets committed is the
+# fingerprint — a few hundred bytes carrying counts and the full axiom roster —
+# and the delta against the previous release. The dump is cached so the next run
+# can diff against it, and uploaded as an artifact so it can be fetched.
+name: kernel index
+
+on:
+  schedule:
+    # Lean ships a minor release roughly every 34 days. Monthly on the 3rd
+    # leaves a couple of days for the Mathlib tag to follow the Lean release.
+    - cron: "0 6 3 * *"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Mathlib tag to measure (default: latest)"
+        required: false
+      force:
+        description: "Re-measure even if this tag was already measured"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  measure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve the tag to measure
+        id: tag
+        run: |
+          set -euo pipefail
+          if [ -n "${{ inputs.tag }}" ]; then
+            TAG="${{ inputs.tag }}"
+          else
+            TAG=$(git ls-remote --tags --refs \
+                  https://github.com/leanprover-community/mathlib4 \
+                  | sed 's#.*refs/tags/##' \
+                  | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' \
+                  | sort -V | tail -1)
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "  measuring $TAG"
+          if [ -f "measurements/$TAG.json" ] && [ "${{ inputs.force }}" != "true" ]; then
+            echo "  already measured; nothing to do"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Find the previous measurement
+        id: prev
+        if: steps.tag.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          PREV=$(ls measurements/v*.json 2>/dev/null \
+                 | sed 's#measurements/##; s#\.json##' \
+                 | grep -v "^${{ steps.tag.outputs.tag }}$" \
+                 | sort -V | tail -1 || true)
+          echo "prev=${PREV:-}" >> "$GITHUB_OUTPUT"
+          echo "  previous measurement: ${PREV:-none}"
+
+      # The previous dump is what makes statements-changed and reproved-only
+      # computable. Without it the run still produces a fingerprint, just no delta.
+      - name: Restore the previous dump
+        if: steps.tag.outputs.skip != 'true' && steps.prev.outputs.prev != ''
+        uses: actions/cache/restore@v4
+        with:
+          path: previous.tsv
+          key: dump-${{ steps.prev.outputs.prev }}
+
+      - name: Install elan
+        if: steps.tag.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          curl -sSfL -o elan.tar.gz \
+            https://github.com/leanprover/elan/releases/latest/download/elan-x86_64-unknown-linux-gnu.tar.gz
+          tar xzf elan.tar.gz
+          ./elan-init -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Clone Mathlib at the tag
+        if: steps.tag.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          git clone --depth 1 --branch "${{ steps.tag.outputs.tag }}" \
+            https://github.com/leanprover-community/mathlib4 mathlib4
+          cd mathlib4
+          echo "  toolchain: $(cat lean-toolchain)"
+          echo "  revision : $(git rev-parse HEAD)"
+          echo "TOOLCHAIN=$(cat lean-toolchain)" >> "$GITHUB_ENV"
+          echo "REVISION=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      # Prebuilt oleans. Without this the job compiles Mathlib from source and
+      # takes hours instead of minutes.
+      - name: Fetch the build cache
+        if: steps.tag.outputs.skip != 'true'
+        working-directory: mathlib4
+        run: |
+          set -euo pipefail
+          lake exe cache get
+
+      - name: Write the dump
+        if: steps.tag.outputs.skip != 'true'
+        working-directory: mathlib4
+        run: |
+          set -euo pipefail
+          cp ../lean_files/Split.lean Split.lean 2>/dev/null \
+            || cp ../src/gonzalgo/lean_files/Split.lean Split.lean
+          # maxErrors only takes effect as a CLI flag; set_option inside the
+          # file is ignored and Lean halts at 100 errors long before the end.
+          lake env lean -D maxErrors=4000 Split.lean
+          mv mathlib_split.tsv ../current.tsv
+          ls -la ../current.tsv
+
+      - name: Verify the dump carries proof terms
+        if: steps.tag.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet -e .
+          # value? returns none for theorems without allowOpaque, which makes an
+          # extractor silently measure statements and report them as proofs.
+          python -m gonzalgo check current.tsv
+
+      - name: Fingerprint
+        if: steps.tag.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          python tools/fingerprint.py current.tsv \
+            --label "${{ steps.tag.outputs.tag }}" \
+            --toolchain "$TOOLCHAIN" --revision "$REVISION" \
+            -o "measurements/${{ steps.tag.outputs.tag }}.json"
+
+      - name: Delta against the previous release
+        if: steps.tag.outputs.skip != 'true' && steps.prev.outputs.prev != ''
+        run: |
+          set -euo pipefail
+          if [ -f previous.tsv ]; then
+            python tools/diff_dumps.py previous.tsv current.tsv \
+              --old-label "${{ steps.prev.outputs.prev }}" \
+              --new-label "${{ steps.tag.outputs.tag }}" \
+              -o "measurements/delta-${{ steps.prev.outputs.prev }}-to-${{ steps.tag.outputs.tag }}.json"
+          else
+            echo "  previous dump not in cache; fingerprint only, no delta"
+          fi
+
+      - name: Cache this dump for the next run
+        if: steps.tag.outputs.skip != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: current.tsv
+          key: dump-${{ steps.tag.outputs.tag }}
+
+      - name: Upload the dump
+        if: steps.tag.outputs.skip != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: mathlib-split-${{ steps.tag.outputs.tag }}
+          path: current.tsv
+          retention-days: 90
+          compression-level: 9
+
+      - name: Commit the measurement
+        if: steps.tag.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add measurements/
+          if git diff --cached --quiet; then
+            echo "  nothing changed"
+          else
+            git commit -m "Measure ${{ steps.tag.outputs.tag }}
+
+          Automated. Fingerprint and, where a previous dump was cached, the delta
+          against ${{ steps.prev.outputs.prev }}. The dump is an artifact on this
+          run, not a file in this repository."
+            git push
+          fi
+
+      - name: Summary
+        if: steps.tag.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          {
+            echo "## ${{ steps.tag.outputs.tag }}"
+            echo '```json'
+            cat "measurements/${{ steps.tag.outputs.tag }}.json"
+            echo '```'
+            D="measurements/delta-${{ steps.prev.outputs.prev }}-to-${{ steps.tag.outputs.tag }}.json"
+            if [ -f "$D" ]; then
+              echo "## Delta from ${{ steps.prev.outputs.prev }}"
+              echo '```json'
+              python -c "import json,sys; d=json.load(open('$D')); print(json.dumps(d['axioms'],indent=1)); [print(f\"{r['quantity']:<24}{r['delta']:>+10,}\") for r in d['rows']]"
+              echo '```'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,30 @@
+{
+  "label": "v4.32.1",
+  "toolchain": "leanprover/lean4:v4.32.1",
+  "revision": "",
+  "declarations": 790171,
+  "theorems": 532605,
+  "definitions": 228875,
+  "other": 28676,
+  "axioms": 15,
+  "modules": 10511,
+  "axiom_roster": [
+    "Classical.choice",
+    "Lean.ofReduceBool",
+    "Lean.ofReduceNat",
+    "Lean.trustCompiler",
+    "Quot.lcInv",
+    "Quot.sound",
+    "isScalarObj",
+    "lcAny",
+    "lcCast",
+    "lcErased",
+    "lcProof",
+    "lcUnreachable",
+    "lcVoid",
+    "propext",
+    "sorryAx"
+  ],
+  "malformed_rows": 0,
+  "graph_digest": "dd0f7852e37c0f3da9ab00441b055ed1"
+}

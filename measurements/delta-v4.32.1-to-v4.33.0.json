@@ -1,0 +1,134 @@
+{
+  "old_label": "v4.32.1",
+  "new_label": "v4.33.0",
+  "old_file": "mathlib_split-v4.32.1.tsv",
+  "new_file": "mathlib_split.tsv",
+  "axioms": {
+    "v4.32.1": [
+      "Classical.choice",
+      "Lean.ofReduceBool",
+      "Lean.ofReduceNat",
+      "Lean.trustCompiler",
+      "Quot.lcInv",
+      "Quot.sound",
+      "isScalarObj",
+      "lcAny",
+      "lcCast",
+      "lcErased",
+      "lcProof",
+      "lcUnreachable",
+      "lcVoid",
+      "propext",
+      "sorryAx"
+    ],
+    "v4.33.0": [
+      "Classical.choice",
+      "Lean.ofReduceBool",
+      "Lean.ofReduceNat",
+      "Lean.trustCompiler",
+      "Quot.lcInv",
+      "Quot.sound",
+      "isScalarObj",
+      "lcAny",
+      "lcCast",
+      "lcErased",
+      "lcProof",
+      "lcUnreachable",
+      "lcVoid",
+      "propext",
+      "sorryAx"
+    ],
+    "added": [],
+    "removed": []
+  },
+  "rows": [
+    {
+      "quantity": "declarations",
+      "v4.32.1": 790171,
+      "v4.33.0": 795218,
+      "delta": 5047,
+      "pct_change": 0.64,
+      "note": ""
+    },
+    {
+      "quantity": "theorems",
+      "v4.32.1": 532605,
+      "v4.33.0": 535601,
+      "delta": 2996,
+      "pct_change": 0.56,
+      "note": ""
+    },
+    {
+      "quantity": "definitions",
+      "v4.32.1": 228875,
+      "v4.33.0": 230757,
+      "delta": 1882,
+      "pct_change": 0.82,
+      "note": ""
+    },
+    {
+      "quantity": "others",
+      "v4.32.1": 28676,
+      "v4.33.0": 28845,
+      "delta": 169,
+      "pct_change": 0.59,
+      "note": ""
+    },
+    {
+      "quantity": "axioms",
+      "v4.32.1": 15,
+      "v4.33.0": 15,
+      "delta": 0,
+      "pct_change": 0.0,
+      "note": ""
+    },
+    {
+      "quantity": "modules",
+      "v4.32.1": 10511,
+      "v4.33.0": 10599,
+      "delta": 88,
+      "pct_change": 0.84,
+      "note": ""
+    },
+    {
+      "quantity": "declarations added",
+      "v4.32.1": null,
+      "delta": 12432,
+      "v4.33.0": 12432,
+      "pct_change": null,
+      "note": "present in the new version only"
+    },
+    {
+      "quantity": "declarations removed",
+      "v4.32.1": 7385,
+      "v4.33.0": null,
+      "delta": -7385,
+      "pct_change": null,
+      "note": "present in the old version only"
+    },
+    {
+      "quantity": "statements changed",
+      "v4.32.1": null,
+      "v4.33.0": null,
+      "delta": 15994,
+      "pct_change": 2.04,
+      "note": "same name, different statement dependencies — a different claim"
+    },
+    {
+      "quantity": "reproved only",
+      "v4.32.1": null,
+      "v4.33.0": null,
+      "delta": 24172,
+      "pct_change": 3.09,
+      "note": "same statement, different proof dependencies — same claim, new proof"
+    },
+    {
+      "quantity": "moved module",
+      "v4.32.1": null,
+      "v4.33.0": null,
+      "delta": 835,
+      "pct_change": 0.11,
+      "note": "same name, relocated"
+    }
+  ]
+}
