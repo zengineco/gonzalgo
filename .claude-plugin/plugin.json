@@ -1,0 +1,25 @@
+{
+  "name": "lean-axiom-provenance",
+  "displayName": "Lean Axiom Provenance",
+  "description": "Find out what a Lean 4 project rests on and why — inherited sorry, native_decide, and which step introduced an axiom, with statement dependencies kept apart from proof dependencies",
+  "version": "0.1.0",
+  "author": {
+    "name": "Vincent Gonzalez",
+    "url": "https://orcid.org/0009-0005-3640-014X"
+  },
+  "homepage": "https://f-keys.com/gonzalgo/",
+  "repository": "https://github.com/zengineco/gonzalgo",
+  "license": "Apache-2.0",
+  "keywords": [
+    "lean4",
+    "mathlib",
+    "metamath",
+    "formal-verification",
+    "axiom-of-choice",
+    "sorry",
+    "native_decide",
+    "provenance",
+    "constructive-mathematics",
+    "proof-assistant"
+  ]
+}
