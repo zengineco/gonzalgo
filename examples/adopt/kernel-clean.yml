@@ -1,0 +1,37 @@
+# Copy to .github/workflows/kernel-clean.yml in your Lean 4 project.
+#
+# The filename is load-bearing. GitHub builds a status badge from the workflow
+# file name, so calling it kernel-clean.yml is what makes the badge read
+# "kernel-clean passing" rather than "CI passing".
+#
+# Then put this in your README:
+#
+#   [![kernel-clean](https://github.com/OWNER/REPO/actions/workflows/kernel-clean.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/kernel-clean.yml)
+#
+# What it asserts: no theorem in this project reaches a `sorry` anywhere
+# upstream, and none was settled by running compiled code instead of the kernel.
+# Lean warns about a `sorry` once, on the line you typed it; it says nothing
+# about a theorem three files later that uses that lemma and is therefore also
+# not proved.
+name: kernel-clean
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: zengineco/gonzalgo@main
+        with:
+          # Root module to audit. Everything it transitively imports is
+          # included. Leave unset to use the lakefile's default target.
+          module: ''
+          # Essential for anything importing Mathlib: minutes instead of hours.
+          cache: 'true'
+          # Set false to report without gating the build.
+          fail-on-trust: 'true'
