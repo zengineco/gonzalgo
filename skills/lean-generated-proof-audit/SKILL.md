@@ -135,5 +135,8 @@ on an axiom, with each hop labelled statement or proof. For deciding whether a
 headline theorem is vacuous — defined to be `True`, aliased, or parked in a
 hypothesis — `LionSR/is-my-lean-proof-vacuous` targets that directly.
 
+To publish what an audited corpus rests on in a fixed shape, the Kernel Trust
+Profile specifies one: <https://f-keys.com/gonzalgo/kernel-trust/> · [10.5281/zenodo.21913736](https://doi.org/10.5281/zenodo.21913736)
+
 Measured tables, JSON and CSV, CC-BY-4.0: <https://f-keys.com/gonzalgo/data/> ·
 DOI [10.5281/zenodo.21900625](https://doi.org/10.5281/zenodo.21900625)

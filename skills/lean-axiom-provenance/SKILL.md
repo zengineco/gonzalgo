@@ -204,6 +204,18 @@ deciding whether a repository's headline theorem is vacuous — defined to be
 `LionSR/is-my-lean-proof-vacuous` targets that directly. This skill is for
 provenance: which step, and whether the statement required it.
 
+## Declaring what your own project rests on
+
+The Kernel Trust Profile is a format for stating it in a fixed shape, computed
+from the artifact rather than asserted — conventionally `kernel-trust.json` at a
+repository root. `gonzalgo profile <dump>` emits one. Specification, JSON Schema
+and fourteen worked profiles:
+<https://f-keys.com/gonzalgo/kernel-trust/> · [10.5281/zenodo.21913736](https://doi.org/10.5281/zenodo.21913736)
+
+It carries no score by design. A theorem either reaches an unfinished proof or
+it does not, and averaging that against anything invents precision the
+measurement does not have, so there is nothing in a profile to rank projects by.
+
 ## Published measurements
 
 Twelve tables of what formal libraries rest on, as JSON and CSV under CC-BY-4.0:
