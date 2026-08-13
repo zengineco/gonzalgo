@@ -47,7 +47,11 @@ def dumpSplit (out : System.FilePath) : CoreM Unit := do
     let vdeps := match ci.value? (allowOpaque := true) with
       | some v => consts v
       | none   => ""
-    h.putStrLn s!"{kindOf ci}\t{name}\t{tdeps}\t{vdeps}"
+    -- Module as a fifth column. Readers taking the first four are unaffected,
+    -- and without it a dump cannot answer which file a declaration lives in,
+    -- which is the question a maintainer can actually act on.
+    let mod := (env.getModuleFor? name).getD `«?»
+    h.putStrLn s!"{kindOf ci}\t{name}\t{tdeps}\t{vdeps}\t{mod}"
     n := n + 1
   h.flush
   IO.println s!"declarations written: {n}"

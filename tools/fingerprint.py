@@ -34,7 +34,7 @@ def main() -> None:
     modules: set[str] = set()
     axioms: set[str] = set()
     rows = malformed = has_module = 0
-    digest = hashlib.blake2b(digest_size=16)
+    accumulator = 0
 
     with open(args.dump, encoding="utf-8", errors="replace") as f:
         for line in f:
@@ -49,11 +49,15 @@ def main() -> None:
             if len(p) >= 5:
                 has_module = 1
                 modules.add(p[4])
-            # Order-independent: a dump whose rows are emitted in a different
-            # order is the same measurement, so the hash must not care.
-            digest.update(hashlib.blake2b(
+            # Combined by XOR rather than by sequential update, so this is
+            # genuinely order-independent. Environment traversal order is not
+            # guaranteed to match across machines, and a sequential hash makes
+            # two identical graphs look different — which is what happened
+            # between a local run and CI on the same release, with every count
+            # agreeing exactly.
+            accumulator ^= int.from_bytes(hashlib.blake2b(
                 "\t".join(p[:4]).encode("utf-8", "replace"),
-                digest_size=8).digest())
+                digest_size=16).digest(), "big")
 
     if not rows:
         raise SystemExit(f"  {args.dump}: no parseable rows — wrong file?")
@@ -67,7 +71,7 @@ def main() -> None:
         "modules": len(modules) if has_module else None,
         "axiom_roster": sorted(axioms),
         "malformed_rows": malformed,
-        "graph_digest": digest.hexdigest(),
+        "graph_digest": f"{accumulator:032x}",
     }
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
