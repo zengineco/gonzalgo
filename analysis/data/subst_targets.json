@@ -1,0 +1,242 @@
+[
+ {
+  "name": "Std.DHashMap.Internal.Raw\u2080.isHashSelf_updateBucket_alter",
+  "kind": "T",
+  "dominates": 4899,
+  "spends": [
+   "Classical.propDecidable"
+  ],
+  "route": [
+   "Classical.propDecidable",
+   "Classical.choice"
+  ]
+ },
+ {
+  "name": "lt_or_eq_of_le",
+  "kind": "T",
+  "dominates": 2018,
+  "spends": [
+   "Classical.propDecidable"
+  ],
+  "route": [
+   "Classical.propDecidable",
+   "Classical.choice"
+  ]
+ },
+ {
+  "name": "_private.Mathlib.Data.Set.Image.0.Set.image_univ._proof_1_1",
+  "kind": "T",
+  "dominates": 1484,
+  "spends": [
+   "Classical.byContradiction"
+  ],
+  "route": [
+   "Classical.propDecidable",
+   "Classical.choice"
+  ]
+ },
+ {
+  "name": "_private.Mathlib.Algebra.Group.Hom.Defs.0.map_sub'._proof_1_2",
+  "kind": "T",
+  "dominates": 856,
+  "spends": [
+   "Classical.byContradiction"
+  ],
+  "route": [
+   "Classical.byContradiction",
+   "Classical.propDecidable",
+   "Classical.choice"
+  ]
+ },
+ {
+  "name": "Classical.not_not",
+  "kind": "T",
+  "dominates": 792,
+  "spends": [
+   "Classical.propDecidable"
+  ],
+  "route": [
+   "Classical.propDecidable",
+   "Classical.choice"
+  ]
+ },
+ {
+  "name": "_private.Init.Data.Nat.Bitwise.Lemmas.0.Nat.testBit_two_pow_sub_succ._proof_1_3",
+  "kind": "T",
+  "dominates": 520,
+  "spends": [
+   "Classical.propDecidable"
+  ],
+  "route": [
+   "Classical.propDecidable",
+   "Classical.choice"
+  ]
+ },
+ {
+  "name": "Classical.not_forall",
+  "kind": "T",
+  "dominates": 497,
+  "spends": [
+   "Classical.propDecidable"
+  ],
+  "route": [
+   "Classical.propDecidable",
+   "Classical.choice"
+  ]
+ },
+ {
+  "name": "_private.Init.Data.Nat.Mod.0.Nat.mul_lt_mul_left._proof_1_1",
+  "kind": "T",
+  "dominates": 440,
+  "spends": [
+   "Classical.propDecidable"
+  ],
+  "route": [
+   "Classical.propDecidable",
+   "Classical.choice"
+  ]
+ },
+ {
+  "name": "WellFounded.extrinsicFix",
+  "kind": "D",
+  "dominates": 398,
+  "spends": [
+   "Classical.propDecidable"
+  ],
+  "route": [
+   "Classical.choice"
+  ]
+ },
+ {
+  "name": "Multiset.add_right_inj",
+  "kind": "T",
+  "dominates": 363,
+  "spends": [
+   "Classical.propDecidable"
+  ],
+  "route": [
+   "Classical.propDecidable",
+   "Classical.choice"
+  ]
+ },
+ {
+  "name": "_private.Mathlib.Algebra.Group.Center.0.Set.mul_mem_center._proof_1_4",
+  "kind": "T",
+  "dominates": 351,
+  "spends": [
+   "Classical.byContradiction"
+  ],
+  "route": [
+   "Classical.propDecidable",
+   "Classical.choice"
+  ]
+ },
+ {
+  "name": "Classical.ofNonempty",
+  "kind": "D",
+  "dominates": 321,
+  "spends": [
+   "Classical.choice"
+  ],
+  "route": [
+   "Classical.choice"
+  ]
+ },
+ {
+  "name": "em",
+  "kind": "T",
+  "dominates": 316,
+  "spends": [
+   "Classical.em"
+  ],
+  "route": [
+   "Classical.em",
+   "Classical.indefiniteDescription",
+   "Classical.choice"
+  ]
+ },
+ {
+  "name": "_private.Mathlib.Data.Set.NAry.0.Set.forall_mem_image2._proof_1_1",
+  "kind": "T",
+  "dominates": 239,
+  "spends": [
+   "Classical.byContradiction"
+  ],
+  "route": [
+   "Classical.propDecidable",
+   "Classical.choice"
+  ]
+ },
+ {
+  "name": "List.perm_insert_swap",
+  "kind": "T",
+  "dominates": 237,
+  "spends": [
+   "Classical.propDecidable"
+  ],
+  "route": [
+   "Classical.propDecidable",
+   "Classical.choice"
+  ]
+ },
+ {
+  "name": "Std.instMinEqOrOfLawfulOrderLeftLeaningMin",
+  "kind": "T",
+  "dominates": 237,
+  "spends": [
+   "Classical.propDecidable"
+  ],
+  "route": [
+   "Classical.propDecidable",
+   "Classical.choice"
+  ]
+ },
+ {
+  "name": "_private.Init.Data.Int.DivMod.Lemmas.0.Int.natCast_eq_zero._proof_1_1",
+  "kind": "T",
+  "dominates": 236,
+  "spends": [
+   "Classical.propDecidable"
+  ],
+  "route": [
+   "Classical.propDecidable",
+   "Classical.choice"
+  ]
+ },
+ {
+  "name": "Classical.choose",
+  "kind": "D",
+  "dominates": 232,
+  "spends": [
+   "Classical.indefiniteDescription"
+  ],
+  "route": [
+   "Classical.indefiniteDescription",
+   "Classical.choice"
+  ]
+ },
+ {
+  "name": "Classical.or_iff_not_imp_left",
+  "kind": "T",
+  "dominates": 230,
+  "spends": [
+   "Classical.propDecidable"
+  ],
+  "route": [
+   "Classical.propDecidable",
+   "Classical.choice"
+  ]
+ },
+ {
+  "name": "and_forall_ne",
+  "kind": "T",
+  "dominates": 215,
+  "spends": [
+   "Classical.propDecidable"
+  ],
+  "route": [
+   "Classical.propDecidable",
+   "Classical.choice"
+  ]
+ }
+]
