@@ -3,7 +3,7 @@
   "name": "io.github.zengineco/gonzalgo",
   "title": "gonzalgo",
   "description": "Reports what a checked Lean 4 or Metamath proof rests on: inherited sorry, compiler trust, axioms.",
-  "version": "0.5.2",
+  "version": "0.5.4",
   "websiteUrl": "https://f-keys.com/gonzalgo/",
   "repository": {
     "url": "https://github.com/zengineco/gonzalgo",

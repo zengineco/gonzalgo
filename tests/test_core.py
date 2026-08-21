@@ -394,10 +394,29 @@ def test_registry_marker_and_server_json_agree_with_the_package():
     # box-drawing characters is invisible to the eye but not to a width check:
     # GONZALGO is 70 columns of art plus 3 padding either side. Drop a letter
     # and this lands at 68 or 70.
-    box = [l for l in readme.splitlines() if l.startswith("║")]
-    assert box, "banner is gone"
-    assert len({len(l) for l in box}) == 1, "banner rows are ragged"
-    assert len(box[0]) == 78, f"banner width {len(box[0])} - is a letter missing?"
+    # The README carries two boxes since the house standard landed: this banner
+    # at the top and the F-Keys signature at the bottom, which is a different
+    # width by design. Checking every box row against one width therefore fails
+    # on a correct README, so each contiguous box is checked on its own.
+    runs, cur = [], []
+    for line in readme.splitlines():
+        if line.startswith("║"):
+            cur.append(line)
+        elif cur:
+            runs.append(cur)
+            cur = []
+    if cur:
+        runs.append(cur)
+
+    assert runs, "banner is gone"
+    for n, run in enumerate(runs):
+        widths = {len(l) for l in run}
+        assert len(widths) == 1, f"box {n} rows are ragged: widths {sorted(widths)}"
+    # 94 since the banner became generated output rather than hand-kept art;
+    # it was 78 while it was hand-maintained. The check is unchanged in spirit:
+    # a dropped glyph still shows up here as a width that is not this one.
+    assert len(runs[0][0]) == 94, \
+        f"banner width {len(runs[0][0])} - is a letter missing?"
 
     m = re.search(r"mcp-name:\s*(\S+?)\s*(?:-->|$)", readme, re.M)
     assert m, "README lost the mcp-name marker; registry publish will fail validation"

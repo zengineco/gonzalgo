@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "gonzalgo"
-version = "0.5.2"
+version = "0.5.4"
 description = "Measure where a formal library spends its axioms: Lean 4 and Metamath."
 readme = "README.md"
 license = "Apache-2.0"
@@ -33,8 +33,8 @@ mcp = ["mcp>=2.0"]
 
 [project.urls]
 Paper = "https://doi.org/10.5281/zenodo.21769846"
-Source = "https://github.com/zengineco/gonzalgo"
-Issues = "https://github.com/zengineco/gonzalgo/issues"
+Source = "https://github.com/vince-gonzalez/gonzalgo"
+Issues = "https://github.com/vince-gonzalez/gonzalgo/issues"
 
 [project.scripts]
 gonzalgo = "gonzalgo.cli:main"

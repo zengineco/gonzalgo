@@ -21,7 +21,7 @@ from . import graph, lean, lean_files, metamath
 from .graph import Graph, PROOF, STATEMENT
 from .lean import AXIOM, Audit, DumpError, Eligibility
 
-__version__ = "0.5.2"
+__version__ = "0.5.4"
 __all__ = [
     "graph", "lean", "lean_files", "metamath",
     "Graph", "PROOF", "STATEMENT",
