@@ -74,10 +74,14 @@ def _open(path: Path):
 
 
 def rows(path: Path) -> Iterator[list[str]]:
-    for line in _open(path):
-        p = line.rstrip("\n").split("\t")
-        if len(p) >= 2:
-            yield p
+    # `with`, because this is a generator: a caller that stops early would
+    # otherwise leave the dump open until the frame is collected, which on
+    # Windows blocks the next write to the same path.
+    with _open(path) as handle:
+        for line in handle:
+            p = line.rstrip("\n").split("\t")
+            if len(p) >= 2:
+                yield p
 
 
 def load(path: Path) -> Graph:
@@ -221,13 +225,14 @@ def audit(sites_path: Path, dump_path: Path, graph: Graph,
     where every route runs through a substitutable position.
     """
     hits, seen = [], set()
-    for line in _open(sites_path):
-        r = line.rstrip("\n").split("\t")
-        if len(r) < 5:
-            continue
-        seen.add(r[2])
-        if r[0] == "REMOVABLE" and real_witness(r[4]):
-            hits.append(r)
+    with _open(sites_path) as handle:
+        for line in handle:
+            r = line.rstrip("\n").split("\t")
+            if len(r) < 5:
+                continue
+            seen.add(r[2])
+            if r[0] == "REMOVABLE" and real_witness(r[4]):
+                hits.append(r)
     hit_decls = {r[2] for r in hits}
 
     dep = graph.dependents(axiom)
